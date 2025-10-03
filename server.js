@@ -19,7 +19,7 @@ app.get("/",(req,res) => {
     res.status(200).json({message : "api is working bro."});
 });
 
-const Port = process.env.Port ||  4010 ;
+const Port = process.env.PORT ||  4010 ;
 
 app.listen(Port,() => {
     console.log("server is runing...",Port);
