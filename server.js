@@ -3,7 +3,7 @@ const connectdb = require('./config/db');
 const devicerouter = require("./routes/device");
 const cors = require("cors");
 require('dotenv').config();
-
+require("./index")
 const app = express();
 
 app.use(cors({origin :"*"}))
@@ -14,9 +14,8 @@ app.use(express.json());
 
 app.use('/api',devicerouter);
 
-
 app.get("/",(req,res) => {
-    res.status(200).json({message : "api is working bro."});
+    res.status(200).json({message : "can api is working bro."});
 });
 
 const Port = process.env.PORT ||  4010 ;
