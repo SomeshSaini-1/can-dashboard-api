@@ -1,0 +1,50 @@
+name: Deploy Node.js Backend with Apache
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Upload backend files (no node_modules)
+        run: |
+          rsync -avz --delete \
+            -e "ssh -o StrictHostKeyChecking=no -p 22022" \
+            ./ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/html/somesh/can-dashboard-api \
+            --exclude='.git' --exclude='.github' --exclude='node_modules'
+
+      - name: Deploy if needed
+        run: |
+          ssh -tt -o StrictHostKeyChecking=no -p 22022 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install 18
+            nvm use 18
+
+            cd /var/www/html/somesh/can-dashboard-api
+
+            echo "==> Installing dependencies only if node_modules doesn't exist..."
+            if [ ! -d "node_modules" ]; then
+              npm install
+            else
+              echo "node_modules already exists, skipping npm install."
+            fi
+
+            echo "==> Running PM2"
+            npx pm2 restart ecosystem.config.js || npx pm2 start ecosystem.config.js
+            npx pm2 save
+            exit
+            EOF
+
