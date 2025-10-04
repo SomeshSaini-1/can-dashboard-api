@@ -230,9 +230,9 @@ exports.get_device_data = async (req, res) => {
 
 exports.get_all_data = async (req, res) => {
   try {
-    const { device_id, sensorKey } = req.body;
-    let page = parseInt(req.body.page) || 1;    // current page number (default 1)
-    let limit = parseInt(req.body.limit) || 86400; // items per page (default 24)
+    const { device_id, sensorKey ,p , l } = req.body;
+    let page = parseInt(p) || 1;    // current page number (default 1)
+    let limit = parseInt(l) || 86400; // items per page (default 24)
     let skip = (page - 1) * limit;
 
     let query = await All_device_info.find(
