@@ -231,11 +231,14 @@ exports.get_device_data = async (req, res) => {
 exports.get_all_data = async (req, res) => {
   try {
     const { device_id, sensorKey } = req.body;
+    let page = parseInt(req.body.page) || 1;    // current page number (default 1)
+    let limit = parseInt(req.body.limit) || 86400; // items per page (default 24)
+    let skip = (page - 1) * limit;
 
     let query = await All_device_info.find(
       { [sensorKey]: { $exists: true, $ne: null, $ne: "" } }, // filter out empty
       { [sensorKey]: 1, createdAt: 1, created_at: 1, _id: 0 }
-    ).sort({ created_at: 1 });
+    ).sort({ created_at: 1 }).skip(skip).limit(limit);
 
 
     // let query = await All_device_info.find(
@@ -252,3 +255,28 @@ exports.get_all_data = async (req, res) => {
     res.status(200).json({ message: error.message });
   }
 }
+
+
+exports.total_data = async (req, res) => {
+  try {
+    const { sensorKey } = req.body;
+    let query = await All_device_info.aggregate([
+      {
+        $match: { [sensorKey]: { $exists: true, $ne: null, $ne: "", $ne: 0 } } // filter out empty values
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: `$${sensorKey}` } // sum of the field
+        }
+      }
+    ]);
+
+    res.status(200).json({query});
+
+  } catch (error) {
+    console.error('db error : ', error);
+    res.status(500).json({message : "db error.",error : error.message});
+  }
+}
+
