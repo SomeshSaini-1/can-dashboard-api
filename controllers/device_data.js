@@ -232,15 +232,16 @@ exports.get_all_data = async (req, res) => {
   try {
     const { device_id, sensorKey } = req.body;
 
-    // let query = await All_device_info.findOne(
-    //   { },
-    //   { [sensorKey]: 1, _id: 0 }
-    // );
-
     let query = await All_device_info.find(
-      {},              
-      { [sensorKey]: 1, createdAt: 1, created_at: 1, _id: 0 } 
-    ).sort({ created_at: 1 });             
+      { [sensorKey]: { $exists: true, $ne: null, $ne: "" } }, // filter out empty
+      { [sensorKey]: 1, createdAt: 1, created_at: 1, _id: 0 }
+    ).sort({ created_at: 1 });
+
+
+    // let query = await All_device_info.find(
+    //   {},              
+    //   { [sensorKey]: 1, createdAt: 1, created_at: 1, _id: 0 } 
+    // ).sort({ created_at: 1 });             
 
 
     // let query = await All_device_info.find({device_id,data});
