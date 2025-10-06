@@ -83,7 +83,8 @@ function mqtt_controller(topics) {
     }
 
     if(payload === "CAN data not received") return;
-    console.log(payload.frames, "payload");
+
+    console.log(payload.frames, "payload ");
 
     const filtered_d = payload && Object.fromEntries(
       Object.entries(payload.frames).map(([key, value]) => [`${key.slice(2, 6)}`, value])
