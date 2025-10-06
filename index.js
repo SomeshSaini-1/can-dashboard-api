@@ -10,25 +10,25 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-  async function fetchDevices() {
-    const url = await fetch(`https://oxymora-can-api.otplai.com/api/get_device`, {
-      method: "POST",
-      body: JSON.stringify({ device_id: "all" }),
-      headers: { "Content-Type": "application/json" }
-    });
-    const res = await url.json();
-    console.log(res,'device data');
-    res.map(ele => {
+async function fetchDevices() {
+  const url = await fetch(`https://oxymora-can-api.otplai.com/api/get_device`, {
+    method: "POST",
+    body: JSON.stringify({ device_id: "all" }),
+    headers: { "Content-Type": "application/json" }
+  });
+  const res = await url.json();
+  console.log(res, 'device data');
+  res.map(ele => {
     mqtt_controller(`OYTCAN/${ele.device_id}/data`);
-    });
+  });
 
 
-  };
+};
 
+fetchDevices();
+setInterval(() => {
   fetchDevices();
-  setInterval(() => {
-    fetchDevices();
-  }, 2 * 30 * 1000);
+}, 2 * 30 * 1000);
 
 // Configuration
 const config = {
@@ -48,75 +48,90 @@ const config = {
 app.use(cors({ origin: "*" }));
 
 
-function mqtt_controller(topics){
+function mqtt_controller(topics) {
   // MQTT Client
-const client = mqtt.connect(config.mqtt.brokerUrl, {
-  username: config.mqtt.username,
-  password: config.mqtt.password,
-  keepalive: config.mqtt.keepalive,
-  reconnectPeriod: config.mqtt.reconnectPeriod,
-});
-
-client.on("connect", () => {
-  console.log("✅ Connected to MQTT broker:", config.mqtt.brokerUrl);
-  client.subscribe(topics, { qos: 1 }, (err) => {
-    if (err) {
-      console.error("❌ Subscribe error:", err);
-    } else {
-      // config.mqtt.topic
-      console.log("📡 Subscribed to:", topics);
-    }
+  const client = mqtt.connect(config.mqtt.brokerUrl, {
+    username: config.mqtt.username,
+    password: config.mqtt.password,
+    keepalive: config.mqtt.keepalive,
+    reconnectPeriod: config.mqtt.reconnectPeriod,
   });
-});
 
-client.on("error", (error) => {
-  console.error("❌ MQTT connection error:", error);
-});
+  client.on("connect", () => {
+    console.log("✅ Connected to MQTT broker:", config.mqtt.brokerUrl);
+    client.subscribe(topics, { qos: 1 }, (err) => {
+      if (err) {
+        console.error("❌ Subscribe error:", err);
+      } else {
+        // config.mqtt.topic
+        console.log("📡 Subscribed to:", topics);
+      }
+    });
+  });
 
-// Handle MQTT messages
-client.on("message", async (mqttTopic, message) => {
-  let payload;
-  try {
-    payload = JSON.parse(message.toString());
-  } catch (e) {
-    payload = message.toString();
-  }
+  client.on("error", (error) => {
+    console.error("❌ MQTT connection error:", error);
+  });
 
-  console.log(Object.keys(payload.frames) , "payload");
-
-const filtered_d = Object.fromEntries(
-  Object.entries(payload.frames).map(([key, value]) => [`${key.slice(2,6)}`, value])
-);
-
-// Print the result
-console.log(filtered_d);
-
-  // const parts = payload.split("#");
-  // const id = parts[0].startsWith("*") ? parts[0] : "unknown_id";
-  const id = payload.id;
-  // const frames = parts.slice(1).filter((frame) => frame && frame.includes(","));
-
-  for (const [key,value] of Object.entries(filtered_d)) {
-  // console.log(`${key} : ${value}`);
-    let frame = `${key} , ${value}`
-  //   if (frame.startsWith("*")) continue;
+  // Handle MQTT messages
+  client.on("message", async (mqttTopic, message) => {
+    let payload;
     try {
-      const { pgn, data } = parseFrame(key,value);
-      const decoded = decodePGN(pgn, data);
-
-      console.log(decoded)
-      io.emit("mqtt_message", { id, decoded });
-      await store_value(id, decoded);
-      
-    } catch (error) {
-      console.error(`Error processing frame ${frame}:`, error);
+      payload = JSON.parse(message.toString());
+    } catch (e) {
+      payload = message.toString();
     }
-  }
 
-});
+    console.log(Object.keys(payload.frames), "payload");
+
+    const filtered_d = Object.fromEntries(
+      Object.entries(payload.frames).map(([key, value]) => [`${key.slice(2, 6)}`, value])
+    );
+
+    // Print the result
+    console.log(filtered_d);
+
+    // const parts = payload.split("#");
+    // const id = parts[0].startsWith("*") ? parts[0] : "unknown_id";
+    const id = payload.id;
+    // const frames = parts.slice(1).filter((frame) => frame && frame.includes(","));
+    await insertfarme(id, payload.frames);
+    for (const [key, value] of Object.entries(filtered_d)) {
+      // console.log(`${key} : ${value}`);
+      let frame = `${key} , ${value}`
+      //   if (frame.startsWith("*")) continue;
+      try {
+        const { pgn, data } = parseFrame(key, value);
+        const decoded = decodePGN(pgn, data);
+
+        console.log(decoded)
+        io.emit("mqtt_message", { id, decoded });
+        await store_value(id, decoded);
+
+      } catch (error) {
+        console.error(`Error processing frame ${frame}:`, error);
+      }
+    }
+
+  });
 
 }
 
+
+// insert farme 
+async function insertfarme(id, data) {
+  try {
+    const url = await fetch('https://oxymora-can-api.otplai.com/api/add_farme', {
+      method: "post",
+      body: JSON.stringify({ device_id: id, farme: data })
+    });
+
+    const res = await url.json();
+    console.log(res, "response.");
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 
 // Parse frames
@@ -293,15 +308,15 @@ async function store_value(id, decoded) {
     };
 
     console.log(json_data)
-    const url = await fetch("https://oxymora-can-api.otplai.com/api/add_all_info",{
-      method :"post",
-      headers : {"Content-Type":"application/json"},
-      body : JSON.stringify(json_data)
+    const url = await fetch("https://oxymora-can-api.otplai.com/api/add_all_info", {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(json_data)
     });
 
     const res = await url.json();
 
-    console.log("res : ",res)
+    console.log("res : ", res)
     const response = await fetch("https://oxymora-can-api.otplai.com/api/add_device_info", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

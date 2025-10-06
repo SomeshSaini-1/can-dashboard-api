@@ -280,3 +280,35 @@ exports.total_data = async (req, res) => {
   }
 }
 
+exports.all_data = async (req, res) => {
+  try {
+    const { device_id, page = 1, limit = 100 } = req.body;
+
+    // Ensure device_id is provided
+    if (!device_id) {
+      return res.status(400).json({ message: "device_id is required" });
+    }
+
+    const skip = (page - 1) * limit;
+
+    const query = await All_device_info.find({ device_id })
+      .sort({ created_at: 1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await All_device_info.countDocuments({ device_id });
+
+    res.status(200).json({
+      success: true,
+      total,
+      page,
+      limit,
+      data: query,
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+
