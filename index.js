@@ -82,9 +82,10 @@ function mqtt_controller(topics) {
       payload = message.toString();
     }
 
-    console.log(Object.keys(payload.frames), "payload");
+    if(payload === "CAN data not received") return;
+    console.log(payload.frames, "payload");
 
-    const filtered_d = Object.fromEntries(
+    const filtered_d = payload && Object.fromEntries(
       Object.entries(payload.frames).map(([key, value]) => [`${key.slice(2, 6)}`, value])
     );
 
@@ -95,7 +96,7 @@ function mqtt_controller(topics) {
     // const id = parts[0].startsWith("*") ? parts[0] : "unknown_id";
     const id = payload.id;
     // const frames = parts.slice(1).filter((frame) => frame && frame.includes(","));
-    await insertfarme(id, payload.frames);
+     insertfarme(id, payload.frames);
     for (const [key, value] of Object.entries(filtered_d)) {
       // console.log(`${key} : ${value}`);
       let frame = `${key} , ${value}`
@@ -117,21 +118,6 @@ function mqtt_controller(topics) {
 
 }
 
-
-// insert farme 
-async function insertfarme(id, data) {
-  try {
-    const url = await fetch('https://oxymora-can-api.otplai.com/api/add_farme', {
-      method: "post",
-      body: JSON.stringify({ device_id: id, farme: data })
-    });
-
-    const res = await url.json();
-    console.log(res, "response.");
-  } catch (error) {
-    console.error(error);
-  }
-}
 
 
 // Parse frames
@@ -327,6 +313,23 @@ async function store_value(id, decoded) {
     console.log("✅ Data stored:", data);
   } catch (err) {
     console.error("❌ Error storing data:", err.message);
+  }
+}
+
+
+// insert farme 
+async function insertfarme(id, data) {
+  try {
+    console.log(id,data)
+    // const url = await fetch('https://oxymora-can-api.otplai.com/api/add_farme', {
+    //   method: "post",
+    //   body: JSON.stringify({ device_id: id, farme: data })
+    // });
+
+    // const res = await url.json();
+    // console.log(res, "response.");
+  } catch (error) {
+    console.error(error);
   }
 }
 
