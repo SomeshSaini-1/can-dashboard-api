@@ -293,7 +293,7 @@ exports.all_data = async (req, res) => {
     const skip = (page - 1) * limit;
 
     let query;
-    if(device_id = "all" ) {
+    if(device_id === "all" ) {
      query = await All_device_info.find()
       .sort({ created_at: 1 })
       .skip(skip)
