@@ -146,10 +146,33 @@ function decodePGN(pgn, data) {
       result.EngineSpeed_rpm = ((data[2] | (data[3] << 8)) / 8).toFixed(2);
       break;
 
-    case 0xFEF1: // 65265
-      result.WheelBasedSpeed_kph = ((data[0] | (data[1] << 8)) / 256).toFixed(2);
-      result.CruiseSetSpeed_kph = ((data[2] | (data[3] << 8)) / 256).toFixed(2);
-      break;
+
+      case 0xFEF1: // 65265 - Cruise Control / Vehicle Speed
+  const b1 = data[0];
+  const b2 = data[1];
+  const b3 = data[2];
+  const b4 = data[3];
+  const b6 = data[5];
+
+  result.TwoSpeedAxleSwitch = b1 & 0x03; // SPN 69
+  result.ParkingBrakeSwitch = (b1 & 0x0C) >> 2; // SPN 70
+  result.CruisePauseSwitch = (b1 & 0x30) >> 4; // SPN 1633
+
+  result.WheelBasedSpeed_kph = ((b2 | (b3 << 8)) / 256).toFixed(2); // SPN 84
+
+  result.ClutchSwitch = (b4 & 0xC0) >> 6; // SPN 598
+  result.BrakeSwitch = (b4 & 0x30) >> 4;  // SPN 597
+  result.CruiseControlEnableSwitch = (b4 & 0x0C) >> 2; // SPN 596
+  result.CruiseControlActive = b4 & 0x03; // SPN 595
+
+  result.CruiseSetSpeed_kph = b6 === 0xFF ? "N/A" : (b6 / 256).toFixed(2); // SPN 86
+  break;
+
+    // case 0xFEF1: // 65265
+    //   result.WheelBasedSpeed_kph = ((data[0] | (data[1] << 8)) / 256).toFixed(2);
+    //   result.CruiseSetSpeed_kph = ((data[2] | (data[3] << 8)) / 256).toFixed(2);
+
+    //   break;
 
     case 0xFEEE: // 65262 - EEC3
       result.EngineCoolantTemp = data[0] - 40;

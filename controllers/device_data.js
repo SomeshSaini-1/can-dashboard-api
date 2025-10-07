@@ -292,10 +292,18 @@ exports.all_data = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    const query = await All_device_info.find({ device_id })
+    let query;
+    if(device_id = "all" ) {
+     query = await All_device_info.find()
       .sort({ created_at: 1 })
       .skip(skip)
       .limit(limit);
+    }else {
+     query = await All_device_info.find({ device_id })
+      .sort({ created_at: 1 })
+      .skip(skip)
+      .limit(limit);
+    }
 
     // const total = await All_device_info.countDocuments({ device_id });
 
