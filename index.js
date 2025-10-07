@@ -84,20 +84,20 @@ function mqtt_controller(topics) {
 
     if(payload === "CAN data not received") return;
 
-    console.log(payload.frames, "payload ");
+    // console.log(payload.frames, "payload ");
 
     const filtered_d = payload && Object.fromEntries(
       Object.entries(payload.frames).map(([key, value]) => [`${key.slice(2, 6)}`, value])
     );
 
     // Print the result
-    console.log(filtered_d);
+    // console.log(filtered_d);
 
     // const parts = payload.split("#");
     // const id = parts[0].startsWith("*") ? parts[0] : "unknown_id";
     const id = payload.id;
     // const frames = parts.slice(1).filter((frame) => frame && frame.includes(","));
-     insertfarme(id, payload.frames);
+   await insertfarme(id, payload.frames);
     for (const [key, value] of Object.entries(filtered_d)) {
       // console.log(`${key} : ${value}`);
       let frame = `${key} , ${value}`
@@ -106,7 +106,6 @@ function mqtt_controller(topics) {
         const { pgn, data } = parseFrame(key, value);
         const decoded = decodePGN(pgn, data);
 
-        console.log(decoded)
         io.emit("mqtt_message", { id, decoded });
         await store_value(id, decoded);
 
@@ -317,7 +316,7 @@ async function store_value(id, decoded) {
       // Engine_TotalFuel_Used: decoded?.Engine_TotalFuel_Used ?? "",
     };
 
-    console.log(json_data)
+    // console.log(json_data)
     const url = await fetch("https://oxymora-can-api.otplai.com/api/add_all_info", {
       method: "post",
       headers: { "Content-Type": "application/json" },
@@ -326,7 +325,7 @@ async function store_value(id, decoded) {
 
     const res = await url.json();
 
-    console.log("res : ", res)
+    // console.log("res : ", res)
     const response = await fetch("https://oxymora-can-api.otplai.com/api/add_device_info", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -334,28 +333,31 @@ async function store_value(id, decoded) {
     });
 
     const data = await response.json();
-    console.log("✅ Data stored:", data);
+    // console.log("✅ Data stored:", data);
   } catch (err) {
     console.error("❌ Error storing data:", err.message);
   }
 }
 
-
-// insert farme 
+// insert frame
 async function insertfarme(id, data) {
   try {
-    console.log(id,data)
-    // const url = await fetch('https://oxymora-can-api.otplai.com/api/add_farme', {
-    //   method: "post",
-    //   body: JSON.stringify({ device_id: id, farme: data })
-    // });
+    const bodyData = { device_id: id, farme: data };
+    console.log(JSON.stringify(bodyData), "farme data");
 
-    // const res = await url.json();
-    // console.log(res, "response.");
+    const url = await fetch("https://oxymora-can-api.otplai.com/api/add_farme", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }, // ✅ add this
+      body: JSON.stringify(bodyData),
+    });
+
+    const res = await url.json();
+    console.log(res, "response.");
   } catch (error) {
-    console.error(error);
+    console.error("❌ insertfarme error:", error);
   }
 }
+
 
 // Socket.IO events
 io.on("connection", (socket) => {
