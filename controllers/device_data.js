@@ -280,6 +280,7 @@ exports.total_data = async (req, res) => {
   }
 }
 
+
 exports.all_data = async (req, res) => {
   try {
     const { device_id, page = 1, limit = 100 } = req.body;
@@ -296,11 +297,11 @@ exports.all_data = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
-    const total = await All_device_info.countDocuments({ device_id });
+    // const total = await All_device_info.countDocuments({ device_id });
 
     res.status(200).json({
       success: true,
-      total,
+      // total,
       page,
       limit,
       data: query,
