@@ -285,39 +285,82 @@ exports.all_data = async (req, res) => {
   try {
     const { device_id, page = 1, limit = 100 } = req.body;
 
-    // Ensure device_id is provided
+    // Validate input
     if (!device_id) {
-      return res.status(400).json({ message: "device_id is required" });
+      return res.status(400).json({ success: false, message: "device_id is required" });
     }
 
     const skip = (page - 1) * limit;
+    let filter = {};
 
-    let query;
-    if(device_id === "all" ) {
-     query = await All_device_info.find()
-      .sort({ created_at: 1 })
-      .skip(skip)
-      .limit(limit);
-    }else {
-     query = await All_device_info.find({ device_id })
-      .sort({ created_at: 1 })
-      .skip(skip)
-      .limit(limit);
+    if (device_id !== "all") {
+      filter.device_id = device_id;
     }
 
-    // const total = await All_device_info.countDocuments({ device_id });
+    // Fetch data with pagination
+    const [data, total] = await Promise.all([
+      All_device_info.find(filter)
+        .sort({ created_at: -1 }) // latest first
+        .skip(skip)
+        .limit(Number(limit)),
+      All_device_info.countDocuments(filter),
+    ]);
 
     res.status(200).json({
       success: true,
-      // total,
-      page,
-      limit,
-      data: query,
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      pages: Math.ceil(total / limit),
+      data,
     });
+
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
+
+
+
+// exports.all_data = async (req, res) => {
+//   try {
+//     const { device_id, page = 1, limit = 100 } = req.body;
+
+//     // Ensure device_id is provided
+//     if (!device_id) {
+//       return res.status(400).json({ message: "device_id is required" });
+//     }
+
+//     const skip = (page - 1) * limit;
+
+//     let query;
+//     if(device_id === "all" ) {
+//      query = await All_device_info.find()
+//       .sort({ created_at: 1 })
+//       .skip(skip)
+//       .limit(limit);
+//     }
+//     else {
+//      query = await All_device_info.find({ device_id })
+//       .sort({ created_at: 1 })
+//       .skip(skip)
+//       .limit(limit);
+//     }
+
+//     // const total = await All_device_info.countDocuments({ device_id });
+
+//     res.status(200).json({
+//       success: true,
+//       // total,
+//       page,
+//       limit,
+//       data: query,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching data:", error);
+//     res.status(500).json({ success: false, message: "Server Error" });
+//   }
+// };
 
 
