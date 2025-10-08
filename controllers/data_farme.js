@@ -21,13 +21,14 @@ exports.add_farme = async (req, res) => {
 // ✅ Get Farme Data by Device ID
 exports.get_farme = async (req, res) => {
     try {
-        const { device_id } = req.body;
+        const { device_id, page = 1, limit = 100 } = req.body;
+        const skip = (page - 1) * limit
 
         if (!device_id) {
             return res.status(400).json({ message: "device_id is required" });
         }
 
-        const query = await Farme.find({ device_id }).sort({ createdAt: -1 }); // newest first
+        const query = await Farme.find({ device_id }).sort({ createdAt: -1 }).skip(skip).limit(limit); // newest first
 
         res.status(200).json({ success: true, data: query });
     } catch (error) {
