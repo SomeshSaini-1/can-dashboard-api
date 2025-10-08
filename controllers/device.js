@@ -72,3 +72,22 @@ exports.delete_device = async (req,res) => {
         res.status(500).json({message : error});
     }
 }
+
+exports.update_device = async (req, res) => {
+    try {
+        const { device_id, status } = req.body;
+        const result = await Device_model.updateOne(
+            { device_id: device_id },
+            { $set: { status: status } }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({ message: "Device not found or status unchanged." });
+        }
+
+        res.status(200).json({ message: "Device updated." });
+    } catch (error) {
+        console.error('db error : ', error);
+        res.status(500).json({ message: error });
+    }
+}

@@ -29,10 +29,10 @@ ExhaustGasTemp_C : String,
 TurboInletTemp_C : String,
 Transmission_Current_Gear : String,
 Catalyst_Level : String,
-
+status : String
 },{timestamps  :  true});
 
-module.exports = mongoose.model("device_info", info_scama)
+// module.exports = mongoose.model("device_info", info_scama)
 module.exports = mongoose.model("device_info", info_scama)
 
 

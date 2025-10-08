@@ -22,6 +22,7 @@ router.post("/get_farme",Farme.get_farme);
 router.post('/add_device',Device_controller.Device_add);
 router.post("/get_device",Device_controller.Get_device);
 router.post("/delete_device",Device_controller.delete_device);
+router.post("update_device_status",Device_controller.update_device);
 
 router.post("/add_driver",Driver.add_driver);
 router.post("/get_driver",Driver.get_driver);

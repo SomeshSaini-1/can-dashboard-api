@@ -32,7 +32,8 @@ exports.add_device_data = async (req, res) => {
       ExhaustGasTemp_C,
       TurboInletTemp_C,
       Transmission_Current_Gear,
-      Catalyst_Level
+      Catalyst_Level,
+      status
     } = req.body;
 
     // Collect values
@@ -64,7 +65,8 @@ exports.add_device_data = async (req, res) => {
       ExhaustGasTemp_C,
       TurboInletTemp_C,
       Transmission_Current_Gear,
-      Catalyst_Level
+      Catalyst_Level,
+      status
     };
 
     Object.keys(updateFields).forEach(
