@@ -303,20 +303,22 @@ exports.all_data = async (req, res) => {
     }
 
     // Fetch data with pagination
-    const [data, total] = await Promise.all([
-      All_device_info.find(filter)
-        .sort({ created_at: -1 }) // latest first
-        .skip(skip)
-        .limit(Number(limit)),
-      All_device_info.countDocuments(filter),
+    // const [data, total] = await Promise.all([
+    //   All_device_info.find(filter).sort({ created_at: -1 }).skip(skip).limit(Number(limit)),
+    //   All_device_info.countDocuments(filter),
+    // ]);
+
+    const [data] = await Promise.all([
+      All_device_info.find(filter).sort({ created_at: -1 }).skip(skip).limit(Number(limit)),
+      // All_device_info.countDocuments(filter),
     ]);
 
     res.status(200).json({
       success: true,
-      total,
+      // total,
       page: Number(page),
       limit: Number(limit),
-      pages: Math.ceil(total / limit),
+      // pages: Math.ceil(total / limit),
       data,
     });
 
