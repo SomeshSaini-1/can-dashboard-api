@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
 
 const info_scama = new mongoose.Schema({
-  device_id  :  {type  :  String, require : true, unique  : true},
- Total_VehicleDistance : String,
+device_id  :  {type  :  String, require : true, unique  : true},
+lat : String,
+long : String,
+Total_VehicleDistance : String,
 EngineSpeed_rpm : String,
 WheelBasedSpeed_kph : String,
 EngineCoolantTemp : String,

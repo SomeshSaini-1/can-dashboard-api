@@ -6,6 +6,7 @@ exports.add_device_data = async (req, res) => {
   try {
     const {
       device_id,
+      lat, long,
       Total_VehicleDistance,
       EngineSpeed_rpm,
       WheelBasedSpeed_kph,
@@ -39,6 +40,7 @@ exports.add_device_data = async (req, res) => {
     // Collect values
     const updateFields = {
       device_id,
+      lat, long,
       Total_VehicleDistance,
       EngineSpeed_rpm,
       WheelBasedSpeed_kph,
@@ -137,7 +139,7 @@ exports.add_all_info = async (req, res) => {
   try {
     const {
       device_id,
-
+      lat, long,
       Total_VehicleDistance,
       EngineSpeed_rpm,
       WheelBasedSpeed_kph,
@@ -169,6 +171,7 @@ exports.add_all_info = async (req, res) => {
 
     const all_info = new All_device_info({
       device_id,
+      lat, long,
       Total_VehicleDistance,
       EngineSpeed_rpm,
       WheelBasedSpeed_kph,
