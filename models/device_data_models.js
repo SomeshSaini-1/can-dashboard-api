@@ -1,41 +1,37 @@
 const mongoose = require("mongoose");
 
-const info_scama = new mongoose.Schema({
-device_id  :  {type  :  String, require : true, unique  : true},
-lat : String,
-long : String,
-Total_VehicleDistance : String,
-EngineSpeed_rpm : String,
-WheelBasedSpeed_kph : String,
-EngineCoolantTemp : String,
-BatteryVoltage_V : String,
-CruiseSetSpeed_kph : String,
-IntakeTemp : String,
-Engine_Turbocharger_Boost_Pressure : String,
-Engine_AirIntakeManifold1_Temperature : String,
-Engine_AirInlet_Pressure : String,
-Net_Battery_Current : String,
-Battery_Potential_s : String,
-FuelLevel_Percent : String,
-EngineOilPressure_kPa : String,
-Engine_Crankcase_Pressure : String,
-Engine_Throttle_Position : String,
-Engine_Fuel_Rate : String,
-Pedal_Position : String,
-Engine_Load : String,
-Engine_TripFuel : String,
-Engine_Total_FuelUsed : String,
-Engine_TotalHours : String,
-Engine_Total_Revolutions : String,
-ExhaustGasTemp_C : String,
-TurboInletTemp_C : String,
-Transmission_Current_Gear : String,
-Catalyst_Level : String,
-status : String
-},{timestamps  :  true});
+const info_schema = new mongoose.Schema({
+    device_id: { type: String, required: true, unique: true },
+    lat: { type: String, default: "NA" },
+    long: { type: String, default: "NA" },
+    Total_VehicleDistance: { type: String, default: "NA" },
+    EngineSpeed_rpm: { type: String, default: "NA" },
+    WheelBasedSpeed_kph: { type: String, default: "NA" },
+    EngineCoolantTemp: { type: String, default: "NA" },
+    BatteryVoltage_V: { type: String, default: "NA" },
+    CruiseSetSpeed_kph: { type: String, default: "NA" },
+    IntakeTemp: { type: String, default: "NA" },
+    Engine_Turbocharger_Boost_Pressure: { type: String, default: "NA" },
+    Engine_AirIntakeManifold1_Temperature: { type: String, default: "NA" },
+    Engine_AirInlet_Pressure: { type: String, default: "NA" },
+    Net_Battery_Current: { type: String, default: "NA" },
+    Battery_Potential_s: { type: String, default: "NA" },
+    FuelLevel_Percent: { type: String, default: "NA" },
+    EngineOilPressure_kPa: { type: String, default: "NA" },
+    Engine_Crankcase_Pressure: { type: String, default: "NA" },
+    Engine_Throttle_Position: { type: String, default: "NA" },
+    Engine_Fuel_Rate: { type: String, default: "NA" },
+    Pedal_Position: { type: String, default: "NA" },
+    Engine_Load: { type: String, default: "NA" },
+    Engine_TripFuel: { type: String, default: "NA" },
+    Engine_Total_FuelUsed: { type: String, default: "NA" },
+    Engine_TotalHours: { type: String, default: "NA" },
+    Engine_Total_Revolutions: { type: String, default: "NA" },
+    ExhaustGasTemp_C: { type: String, default: "NA" },
+    TurboInletTemp_C: { type: String, default: "NA" },
+    Transmission_Current_Gear: { type: String, default: "NA" },
+    Catalyst_Level: { type: String, default: "NA" },
+    status: { type: String, default: "NA" }
+}, { timestamps: true });
 
-// module.exports = mongoose.model("device_info", info_scama)
-module.exports = mongoose.model("device_info", info_scama)
-
-
-
+module.exports = mongoose.model("device_info", info_schema);
