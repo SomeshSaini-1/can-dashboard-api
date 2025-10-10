@@ -220,7 +220,7 @@ exports.get_device_data = async (req, res) => {
     let data;
 
     if (device_id === "all") {
-      data = await Device_info.find({}, { device_id: 1 });
+      data = await Device_info.find();
     } else {
       data = await Device_info.find({ device_id });
     }
@@ -286,88 +286,92 @@ exports.total_data = async (req, res) => {
 }
 
 
+
+
 exports.all_data = async (req, res) => {
   try {
-    const { device_id, page = 1, limit = 100 } = req.body;
+    const { device_id = "all", page = 1, limit = 100 } = req.body;
 
-    // Validate input
-    if (!device_id) {
-      return res.status(400).json({ success: false, message: "device_id is required" });
-    }
-
-    const skip = (page - 1) * limit;
+    // 🧠 Dynamic filter
     let filter = {};
-
     if (device_id !== "all") {
       filter.device_id = device_id;
     }
 
-    // Fetch data with pagination
-    // const [data, total] = await Promise.all([
-    //   All_device_info.find(filter).sort({ created_at: -1 }).skip(skip).limit(Number(limit)),
-    //   All_device_info.countDocuments(filter),
-    // ]);
+    const skip = (page - 1) * limit;
 
-    const [data] = await Promise.all([
-      All_device_info.find(filter).sort({ created_at: -1 }).skip(skip).limit(Number(limit)),
-      // All_device_info.countDocuments(filter),
-    ]);
+    // ⚙️ Fetch latest records (sorted by createdAt)
+    const data = await All_device_info.find(filter)
+      .sort({ createdAt: -1 }) // latest first
+      .skip(Number(skip))
+      .limit(Number(limit))
+      .lean();
+
+    // ✅ Count total for pagination
+    const total = await All_device_info.countDocuments(filter);
 
     res.status(200).json({
       success: true,
-      // total,
+      device_id: device_id === "all" ? "All Devices" : device_id,
       page: Number(page),
       limit: Number(limit),
-      // pages: Math.ceil(total / limit),
+      total,
+      totalPages: Math.ceil(total / limit),
+      count: data.length,
       data,
     });
-
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error("❌ Error fetching data:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
-
 
 
 // exports.all_data = async (req, res) => {
 //   try {
 //     const { device_id, page = 1, limit = 100 } = req.body;
 
-//     // Ensure device_id is provided
+//     // 🧩 Validate input
 //     if (!device_id) {
-//       return res.status(400).json({ message: "device_id is required" });
+//       return res.status(400).json({ success: false, message: "device_id is required" });
 //     }
 
 //     const skip = (page - 1) * limit;
 
-//     let query;
-//     if(device_id === "all" ) {
-//      query = await All_device_info.find()
-//       .sort({ created_at: 1 })
-//       .skip(skip)
-//       .limit(limit);
-//     }
-//     else {
-//      query = await All_device_info.find({ device_id })
-//       .sort({ created_at: 1 })
-//       .skip(skip)
-//       .limit(limit);
+    
+//     let filter = {};
+
+//     if (device_id !== "all") {
+//       filter.device_id = device_id;
 //     }
 
-//     // const total = await All_device_info.countDocuments({ device_id });
+
+//     // ⚙️ Fetch all fields for this device_id
+//     const data = await All_device_info.find(filter)
+//       .sort({ createdAt: -1 }) // newest first
+//       .skip(Number(skip))
+//       .limit(Number(limit))
+//       .lean(); // faster JSON output
+
+//     // ✅ Total count (optional, for pagination info)
+//     const total = await All_device_info.countDocuments(filter);
 
 //     res.status(200).json({
 //       success: true,
-//       // total,
-//       page,
-//       limit,
-//       data: query,
+//       page: Number(page),
+//       limit: Number(limit),
+//       total,
+//       totalPages: Math.ceil(total / limit),
+//       count: data.length,
+//       data,
 //     });
 //   } catch (error) {
-//     console.error("Error fetching data:", error);
+//     console.error("❌ Error fetching data:", error);
 //     res.status(500).json({ success: false, message: "Server Error" });
 //   }
 // };
+
+
+
 
 
