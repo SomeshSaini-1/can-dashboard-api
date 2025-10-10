@@ -240,16 +240,28 @@ exports.get_all_data = async (req, res) => {
     let limit = parseInt(req.body.limit) || 86400; // items per page (default 24)
     let skip = (page - 1) * limit;
 
-    let query = await All_device_info.find(
-      { [sensorKey]: { $exists: true, $ne: null, $ne: "" } }, // filter out empty
-      { [sensorKey]: 1, createdAt: 1, created_at: 1, _id: 0 }
-    ).sort({ created_at: 1 }).skip(skip).limit(limit);
-
-
     // let query = await All_device_info.find(
-    //   {},              
-    //   { [sensorKey]: 1, createdAt: 1, created_at: 1, _id: 0 } 
-    // ).sort({ created_at: 1 });             
+    //   {device_id : device_id}
+    //   { [sensorKey]: { $exists: true, $ne: null, $ne: "" } }, // filter out empty
+    //   { [sensorKey]: 1, createdAt: 1, created_at: 1, _id: 0 }
+    // ).sort({ created_at: 1 }).skip(skip).limit(limit);
+
+     let query = await All_device_info.find(
+  {
+    device_id: device_id,
+    [sensorKey]: { $exists: true, $ne: null, $ne: "" } // filter out empty values
+  },
+  {
+    [sensorKey]: 1,
+    createdAt: 1,
+    created_at: 1,
+    _id: 0
+  }
+)
+.sort({ created_at: 1 })
+.skip(skip)
+.limit(limit);
+
 
 
     // let query = await All_device_info.find({device_id,data});
