@@ -93,6 +93,14 @@ function mqtt_controller(topic) {
 
     for (const [key, value] of Object.entries(filtered_d)) {
       let frame = `${key} , ${value}`;
+
+      
+    const [pgnHex, dataHex] = frame.split(",").map(s => s.trim());
+    if (!pgnHex || !dataHex || dataHex === "FFFFFFFFFFFFFFFF") {
+      console.log(`Skipping malformed frame: ${frame}`);
+      continue;
+    }
+
       try {
         const { pgn, data } = parseFrame(key, value);
         const decoded = decodePGN(pgn, data);
@@ -115,6 +123,7 @@ function parseFrame(pgnHex, dataHex) {
 
 function decodePGN(pgn, data) {
   const result = {};
+  // console.log(pgn,data)
   if (isNaN(pgn)) {
     result.Decoded = "Invalid PGN";
     return result;
@@ -148,9 +157,9 @@ function decodePGN(pgn, data) {
       result.Engine_AirInlet_Pressure = (data[4] * 2).toFixed(1);
       break;
     case 0xFEF7:
-      result.Net_Battery_Current = (data[0] - 125).toFixed(1) || "N/A";
+      // result.Net_Battery_Current = (data[0] - 125).toFixed(1) || "N/A";
       result.Battery_Potential_s = (data[2] * 0.05).toFixed(1) || "N/A";
-      result.BatteryVoltage_V = ((data[5] | (data[6] << 8)) * 0.05).toFixed(2);
+      // result.BatteryVoltage_V = ((data[5] | (data[6] << 8)) * 0.05).toFixed(2);
       break;
     case 0xFEFC:
       result.FuelLevel_Percent = (data[2] * 0.4).toFixed(1);
@@ -160,7 +169,7 @@ function decodePGN(pgn, data) {
       result.Engine_Crankcase_Pressure = (((data[5] | (data[6] << 8)) / 128) - 250).toFixed(2);
       break;
     case 0xFEF2:
-      result.Engine_Throttle_Position = (data[6] * 0.4).toFixed(1);
+      result.Engine_Throttle_Position = (data[7] * 0.4).toFixed(1);
       result.Engine_Fuel_Rate = (((data[1] + data[2] * 256) + 16) * 0.05).toFixed(1);
       break;
     case 0xF003:
