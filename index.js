@@ -158,11 +158,11 @@ function decodePGN(pgn, data) {
       break;
     case 0xFEF7:
       // result.Net_Battery_Current = (data[0] - 125).toFixed(1) || "N/A";
-      result.Battery_Potential_s = (data[2] * 0.05).toFixed(1) || "N/A";
-      // result.BatteryVoltage_V = ((data[5] | (data[6] << 8)) * 0.05).toFixed(2);
+      // result.Battery_Potential_s = (data[2] * 0.05).toFixed(1) || "N/A";
+      result.BatteryVoltage_V = ((data[4] | (data[5] << 8)) * 0.05).toFixed(2);
       break;
     case 0xFEFC:
-      result.FuelLevel_Percent = (data[2] * 0.4).toFixed(1);
+      result.FuelLevel_Percent = (data[1] * 0.4).toFixed(1);
       break;
     case 0xFEEF:
       result.EngineOilPressure_kPa = (data[4] * 4).toFixed(1);
@@ -193,10 +193,10 @@ function decodePGN(pgn, data) {
       result.TurboInletTemp_C = ((data[2] | (data[3] << 8)) * 0.03125 - 273).toFixed(1);
       break;
     case 0xF005:
-      result.Transmission_Current_Gear = data[4];
+      result.Transmission_Current_Gear = data[4]; 
       break;
     case 0xFE56:
-      result.Catalyst_Level = (data[1] * 0.4).toFixed(1);
+      result.Catalyst_Level = (data[0] * 0.4).toFixed(1);
       break;
     default:
       result.Decoded = "Unknown PGN";
