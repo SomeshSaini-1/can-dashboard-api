@@ -96,7 +96,10 @@ function mqtt_controller(topic) {
 
       
     const [pgnHex, dataHex] = frame.split(",").map(s => s.trim());
-    if (!pgnHex || !dataHex || dataHex === "FFFFFFFFFFFFFFFF") {
+    if (!pgnHex
+       || !dataHex 
+      //  || dataHex === "FFFFFFFFFFFFFFFF"
+    ) {
       console.log(`Skipping malformed frame: ${frame}`);
       continue;
     }
