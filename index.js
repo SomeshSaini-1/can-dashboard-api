@@ -185,7 +185,7 @@ function decodePGN(pgn, data) {
       result.Engine_Total_FuelUsed = ((data[4] | (data[5] << 8) | (data[6] << 16) | (data[7] << 24)) * 0.05).toFixed(1);
       break;
     case 0xFEE0:
-      result.Total_VehicleDistance = ((data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24)) * 0.125).toFixed(1);
+      result.Total_VehicleDistance = ((data[4] | (data[5] << 8) | (data[6] << 16) | (data[7] << 24)) * 0.125).toFixed(1);
       break;
     case 0xFEE5:
       result.Engine_TotalHours = ((data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24)) * 0.05).toFixed(1);
