@@ -134,7 +134,7 @@ function decodePGN(pgn, data) {
 
   switch (pgn) {
     case 0xF004:
-      result.EngineSpeed_rpm = ((data[2] | (data[3] << 8)) / 8).toFixed(2);
+      result.EngineSpeed_rpm = ((data[3] | (data[4] << 8)) / 8).toFixed(2);
       break;
     case 0xFEF1:
       const b1 = data[0], b2 = data[1], b3 = data[2], b4 = data[3], b6 = data[5];
@@ -155,9 +155,9 @@ function decodePGN(pgn, data) {
       result.IntakeTemp = data[0] - 40;
       break;
     case 0xFEF6:
-      result.Engine_Turbocharger_Boost_Pressure = (data[2] * 2).toFixed(1);
-      result.Engine_AirIntakeManifold1_Temperature = (data[3] - 40).toFixed(1);
-      result.Engine_AirInlet_Pressure = (data[4] * 2).toFixed(1);
+      result.Engine_Turbocharger_Boost_Pressure = (data[1] * 2).toFixed(1);
+      result.Engine_AirIntakeManifold1_Temperature = (data[2] - 40).toFixed(1);
+      result.Engine_AirInlet_Pressure = (data[3] * 2).toFixed(1);
       break;
     case 0xFEF7:
       // result.Net_Battery_Current = (data[0] - 125).toFixed(1) || "N/A";
@@ -168,35 +168,35 @@ function decodePGN(pgn, data) {
       result.FuelLevel_Percent = (data[1] * 0.4).toFixed(1);
       break;
     case 0xFEEF:
-      result.EngineOilPressure_kPa = (data[4] * 4).toFixed(1);
-      result.Engine_Crankcase_Pressure = (((data[5] | (data[6] << 8)) / 128) - 250).toFixed(2);
+      result.EngineOilPressure_kPa = (data[3] * 4).toFixed(1);
+      result.Engine_Crankcase_Pressure = (((data[4] | (data[5] << 8)) / 128) - 250).toFixed(2);
       break;
     case 0xFEF2:
-      result.Engine_Throttle_Position = (data[7] * 0.4).toFixed(1);
-      result.Engine_Fuel_Rate = (((data[1] + data[2] * 256) + 16) * 0.05).toFixed(1);
+      result.Engine_Throttle_Position = (data[6] * 0.4).toFixed(1);
+      result.Engine_Fuel_Rate = (((data[0] + data[1] * 256) + 16) * 0.05).toFixed(1);
       break;
     case 0xF003:
       result.Pedal_Position = (data[1] * 0.4).toFixed(1);
       result.Engine_Load = data[2].toFixed(1);
-      result.Actual_Max_Available_EngineTorque = "N/A";
+      result.Actual_Max_Available_EngineTorque = "--";
       break;
     case 0xFEE9:
-      result.Engine_TripFuel = ((data[1] | (data[2] << 8) | (data[3] << 16) | (data[4] << 24)) * 0.05).toFixed(1);
-      result.Engine_Total_FuelUsed = ((data[5] | (data[6] << 8) | (data[7] << 16) | (data[8] << 24)) * 0.05).toFixed(1);
+      result.Engine_TripFuel = ((data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24)) * 0.05).toFixed(1);
+      result.Engine_Total_FuelUsed = ((data[4] | (data[5] << 8) | (data[6] << 16) | (data[7] << 24)) * 0.05).toFixed(1);
       break;
     case 0xFEE0:
-      result.Total_VehicleDistance = ((data[1] | (data[2] << 8) | (data[3] << 16) | (data[4] << 24)) * 0.125).toFixed(1);
+      result.Total_VehicleDistance = ((data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24)) * 0.125).toFixed(1);
       break;
     case 0xFEE5:
       result.Engine_TotalHours = ((data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24)) * 0.05).toFixed(1);
       result.Engine_Total_Revolutions = ((data[4] | (data[5] << 8) | (data[6] << 16) | (data[7] << 24)) * 1000).toFixed(1);
       break;
     case 0xFEDF:
-      result.ExhaustGasTemp_C = ((data[0] | (data[1] << 8)) * 0.03125 - 273).toFixed(1);
-      result.TurboInletTemp_C = ((data[2] | (data[3] << 8)) * 0.03125 - 273).toFixed(1);
+      result.ExhaustGasTemp_C = ((data[5] | (data[6] << 8)) * 0.03125 - 273).toFixed(1);
+      result.TurboInletTemp_C = ((data[1] | (data[2] << 8)) * 0.03125 - 273).toFixed(1);
       break;
     case 0xF005:
-      result.Transmission_Current_Gear = data[4]; 
+      result.Transmission_Current_Gear = data[3]; 
       break;
     case 0xFE56:
       result.Catalyst_Level = (data[0] * 0.4).toFixed(1);
