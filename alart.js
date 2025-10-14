@@ -65,7 +65,7 @@ const logEntry2 = {
 };
 
         console.log(logEntry);
-        saveLog(logEntry);
+        saveLog(logEntry2);
       }
     }
 
@@ -82,9 +82,20 @@ function formatDuration(seconds) {
   return `${mins} min${mins > 1 ? "s" : ""}${secs ? ` ${secs} Secs` : ""}`;
 }
 
-function saveLog(entry) {
-  fs.appendFile(LOG_FILE, entry, (err) => {
-    if (err) console.error("Error writing to log file:", err);
+async function saveLog(entry) {
+
+  const url = await fetch("https://oxymora-can-api.otplai.com/api/add_alert",{
+    method : "post",
+    headers : {'Content-Type' : "Application/json"},
+    body : JSON.stringify({alert_type :"over speed",data : entry})
   });
+
+  const res = await url.json();
+  console.log(res)
+  // fs.appendFile(LOG_FILE, entry, (err) => {
+  //   if (err) console.error("Error writing to log file:", err);
+  // });
+
+
 }
 p
