@@ -5,6 +5,7 @@ const alertrouter = require("./routes/alert_route");
 const cors = require("cors");
 require('dotenv').config();
 require("./index")
+require("./alart")
 const app = express();
 
 app.use(cors({origin :"*"}))
