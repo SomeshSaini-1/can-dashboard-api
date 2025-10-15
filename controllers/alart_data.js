@@ -1,4 +1,4 @@
-const Alert = require("mongoose");
+const Alert = require("../models/alart_modle");
 
 exports.add_alert = async (req,res) => {
     try {
