@@ -161,7 +161,7 @@ function decodePGN(pgn, data) {
       break;
     case 0xFEF7:
       // result.Net_Battery_Current = (data[0] - 125).toFixed(1) || "N/A";
-      // result.Battery_Potential_s = (data[2] * 0.05).toFixed(1) || "N/A";
+      result.Battery_Potential_s = (data[2] * 0.05).toFixed(1) || "N/A";
       result.BatteryVoltage_V = ((data[4] | (data[5] << 8)) * 0.05).toFixed(2);
       break;
     case 0xFEFC:

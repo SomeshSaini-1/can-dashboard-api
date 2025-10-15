@@ -87,7 +87,7 @@ async function saveLog(entry) {
   const url = await fetch("https://oxymora-can-api.otplai.com/api/add_alert",{
     method : "post",
     headers : {'Content-Type' : "Application/json"},
-    body : JSON.stringify({alert_type :"over speed",data : entry})
+    body : JSON.stringify({alert_type :"over_speed",data : entry})
   });
 
   const res = await url.json();

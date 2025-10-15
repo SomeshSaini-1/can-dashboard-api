@@ -258,7 +258,7 @@ exports.get_all_data = async (req, res) => {
     _id: 0
   }
 )
-.sort({ created_at: 1 })
+.sort({ created_at: -1 })
 .skip(skip)
 .limit(limit);
 
