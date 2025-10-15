@@ -48,25 +48,58 @@ async function get_device_info(id) {
 
       if (overSpeed && distanceDiff > 0) {
         const logEntry = `
-Vehicle: ${id}
-Over Speed: ${overSpeed}
-Duration: ${duration}
-Distance Travelled: ${distanceDiff.toFixed(2)} km
-Date & Time: ${new Date(latest.updatedAt).toLocaleString()}
---------------------------------------------------------------
-`;
+  Vehicle: ${id}
+  Over Speed: ${overSpeed}
+  Duration: ${duration}
+  Distance Travelled: ${distanceDiff.toFixed(2)} km
+  Date & Time: ${new Date(latest.updatedAt).toLocaleString()}
+  --------------------------------------------------------------
+  `;
 
-const logEntry2 = {
-  vehicle: id,
-  overSpeed: overSpeed,
-  duration: duration,
-  distanceTravelled: Number(distanceDiff.toFixed(2)),
-  dateTime: new Date(latest.updatedAt).toISOString(),
-};
 
-        console.log(logEntry);
+        const logEntry2 = {
+          vehicle: id,
+          overSpeed: overSpeed,
+          duration: duration,
+          distanceTravelled: Number(distanceDiff.toFixed(2)),
+          dateTime: new Date(latest.updatedAt).toISOString(),
+        };
+
+
+
+        console.log("over_speed",logEntry);
         saveLog(logEntry2);
       }
+
+
+      console.log(`${speed },prev ${JSON.stringify(prevData[id])}`)
+      if(speed - prev.speed > 12){
+        const logEntry = {
+           vehicle: id,
+           dateTime: new Date(latest.updatedAt).toISOString(),
+        }
+        console.log(speed ,'HarshAcceleration');
+        saveLog("HarshAcceleration",logEntry);
+      }
+      if(prev.speed - speed > 12) {
+        const logEntry = {
+           vehicle: id,
+           dateTime: new Date(latest.updatedAt).toISOString(),
+        }
+        console.log(speed ,'HardBrake');
+        saveLog("HardBrake",logEntry);
+      }
+
+          // dateTime: new Date(latest.updatedAt).toISOString(),
+          
+    // "over_speed": "Over Speed",
+    // "HarshAcceleration": "Harsh Acceleration",
+    // "Idling": "Idling",
+    // "HardBrake": "Hard Brake",
+    // "Stoppage": "Stoppage",
+    // "Freerun": "Freerun",
+    // "Geofence": "Geofence"
+
     }
 
     prevData[id] = { distance, time };
@@ -82,12 +115,12 @@ function formatDuration(seconds) {
   return `${mins} min${mins > 1 ? "s" : ""}${secs ? ` ${secs} Secs` : ""}`;
 }
 
-async function saveLog(entry) {
+async function saveLog(type,entry) {
 
-  const url = await fetch("https://oxymora-can-api.otplai.com/api/add_alert",{
-    method : "post",
-    headers : {'Content-Type' : "Application/json"},
-    body : JSON.stringify({alert_type :"over_speed",data : entry})
+  const url = await fetch("https://oxymora-can-api.otplai.com/api/add_alert", {
+    method: "post",
+    headers: { 'Content-Type': "Application/json" },
+    body: JSON.stringify({ alert_type: type, data: entry })
   });
 
   const res = await url.json();
