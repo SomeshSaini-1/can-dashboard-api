@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
-const alart = new mongoose.Schema({
+const alert = new mongoose.Schema({
     alart_type : {type : String},
     data : {type : Object}
 },{timestamps : true});
 
-module.exports = mongoose.model("Alart",alart);
+module.exports = mongoose.model("Alert",alert);
