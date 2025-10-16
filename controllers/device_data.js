@@ -270,6 +270,7 @@ if (device_id) {
 const query = await All_device_info.find(
   filter,
   {
+    device_id :1,
     [sensorKey]: 1,
     createdAt: 1,
     created_at: 1,

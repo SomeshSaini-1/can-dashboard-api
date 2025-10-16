@@ -84,37 +84,77 @@ function mqtt_controller(topic) {
         return
     }
 
-    const filtered_d = payload && Object.fromEntries(
-      Object.entries(payload.frames).map(([key, value]) => [`${key.slice(2, 6)}`, value])
-    );
+    // const filtered_d = payload && Object.fromEntries(
+    //   Object.entries(payload.frames).map(([key, value]) => [`${key.slice(2, 6)}`, value])
+    // );
 
-    const id = payload.id;
-    await insertfarme(id, payload.frames);
+    // const id = payload.id;
+    // await insertfarme(id, payload.frames);
 
-    for (const [key, value] of Object.entries(filtered_d)) {
-      let frame = `${key} , ${value}`;
+    // for (const [key, value] of Object.entries(filtered_d)) {
+    //   let frame = `${key} , ${value}`;
 
       
-    const [pgnHex, dataHex] = frame.split(",").map(s => s.trim());
-    if (!pgnHex
-       || !dataHex 
-       || dataHex === "FFFFFFFFFFFFFFFF"
-    ) {
-      console.log(`Skipping malformed frame: ${frame}`);
-      continue;
-    }
+    // const [pgnHex, dataHex] = frame.split(",").map(s => s.trim());
+    // if (!pgnHex
+    //    || !dataHex 
+    //    || dataHex === "FFFFFFFFFFFFFFFF"
+    // ) {
+    //   console.log(`Skipping malformed frame: ${frame}`);
+    //   continue;
+    // }
 
-      try {
-        const { pgn, data } = parseFrame(key, value);
-        const decoded = decodePGN(pgn, data);
+    //   try {
+    //     const { pgn, data } = parseFrame(key, value);
+    //     const decoded = decodePGN(pgn, data);
 
-        io.emit("mqtt_message", { id, decoded });
-        await store_value(id, decoded);
+    //     io.emit("mqtt_message", { id, decoded });
+    //     await store_value(id, decoded);
 
-      } catch (error) {
-        console.error(`Error processing frame ${frame}:`, error);
-      }
-    }
+    //   } catch (error) {
+    //     console.error(`Error processing frame ${frame}:`, error);
+    //   }
+    // }
+
+
+const filtered_d = payload && Object.fromEntries(
+  Object.entries(payload.frames).map(([key, value]) => [`${key.slice(2, 6)}`, value])
+);
+
+const id = payload.id;
+await insertfarme(id, payload.frames);
+
+const decodedFrames = [];
+
+for (const [key, value] of Object.entries(filtered_d)) {
+  const frame = `${key}, ${value}`;
+  const [pgnHex, dataHex] = frame.split(",").map(s => s.trim());
+
+  if (!pgnHex || !dataHex || dataHex === "FFFFFFFFFFFFFFFF") {
+    console.log(`Skipping malformed frame: ${frame}`);
+    continue;
+  }
+
+  try {
+    const { pgn, data } = parseFrame(key, value);
+    const decoded = decodePGN(pgn, data);
+    decodedFrames.push(decoded);
+
+    io.emit("mqtt_message", { id, decoded });
+
+  } catch (error) {
+    console.error(`Error processing frame ${frame}:`, error);
+  }
+}
+
+// Store all decoded frames after processing
+for (const decoded of decodedFrames) {
+  await store_value(id, decoded);
+}
+
+
+
+
   });
 }
 
