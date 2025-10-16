@@ -13,6 +13,7 @@ async function fetchDevices() {
   });
 
   const res = await url.json();
+  console.log(res,"res")
   res.forEach((ele) => get_device_info(ele.device_id));
 }
 
@@ -102,7 +103,7 @@ async function get_device_info(id) {
 
     }
 
-    prevData[id] = { distance, time };
+    prevData[id] = {speed, distance, time };
   } catch (error) {
     console.error("Error fetching device info:", error);
   }
