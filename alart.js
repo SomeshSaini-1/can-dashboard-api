@@ -18,7 +18,7 @@ async function fetchDevices() {
 }
 
 fetchDevices();
-setInterval(fetchDevices, 3000); // every 3 seconds
+setInterval(fetchDevices, 10000); // every 3 seconds
 
 async function get_device_info(id) {
   try {
@@ -104,6 +104,7 @@ async function get_device_info(id) {
     }
 
     prevData[id] = {speed, distance, time };
+    
   } catch (error) {
     console.error("Error fetching device info:", error);
   }
