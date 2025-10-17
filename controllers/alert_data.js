@@ -2,7 +2,7 @@ const Alert = require("../models/alert_model");
 
 exports.add_alert = async (req,res) => {
     try {
-        const {alert_type,data} = req.body;
+        const {alert_type, data} = req.body;
         if(!alert_type || !data){
             return res.status(400).json({message : "alert type and data are required."});
         }
