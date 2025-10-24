@@ -82,6 +82,8 @@ async function get_device_info(id) {
         console.log(speed ,'HarshAcceleration');
         saveLog("HarshAcceleration",logEntry);
       }
+      
+
       if(prev.speed - speed > 12) {
         const logEntry = {
            vehicle: id,

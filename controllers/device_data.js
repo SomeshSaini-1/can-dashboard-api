@@ -405,4 +405,60 @@ exports.all_data = async (req, res) => {
 
 
 
+exports.Get_data_excle = async (req, res) => {
+    try {
+        const { device_id, from, to } = req.query;
+        console.log(device_id, from, to);
+
+    //        let filter = {};
+    // if (device_id !== "all") {
+    //   filter.device_id = device_id;
+    // }
+    //     const info = await All_device_info.find({
+    //         device_id: device_id,
+    //         createdAt: {
+    //             $gte: new Date(`${from}T00:00:00Z`),
+    //             $lte: new Date(`${to}T23:59:59Z`)
+    //         }
+    //     }).lean(); // use .lean() to return plain JS objects  
+
+        let filter = {
+          createdAt: {
+            $gte: new Date(`${from}T00:00:00Z`),
+            $lte: new Date(`${to}T23:59:59Z`)
+          }
+        };
+
+        // Only filter by device_id if not "all"
+        if (device_id !== "all") {
+          filter.device_id = device_id;
+        }
+
+        const info = await All_device_info.find(filter).lean();
+
+
+        if (info.length === 0) {
+            return res.status(404).json({message: "No data found for the given criteria."});
+        }
+
+        // Convert to worksheet
+        const worksheet = XLSX.utils.json_to_sheet(info);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Info');
+
+        // Generate buffer
+        const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+        // Set headers
+        res.setHeader('Content-Disposition', 'attachment; filename="info-data.xlsx"');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        // Send the file
+        res.send(buffer);
+
+    } catch (error) {
+        console.error("error : ", error);
+        res.status(500).json({ message: "error", error: error.message });
+    }
+};
 
