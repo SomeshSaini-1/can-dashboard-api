@@ -1,5 +1,7 @@
 const Device_info = require('../models/device_data_models');
-const All_device_info = require("../models/all_info")
+const All_device_info = require("../models/all_info");
+const XLSX = require('xlsx');
+
 
 // Insert or update device data
 exports.add_device_data = async (req, res) => {
