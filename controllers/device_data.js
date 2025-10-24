@@ -405,7 +405,6 @@ exports.all_data = async (req, res) => {
 // };
 
 
-
 exports.Get_data_excle = async (req, res) => {
     try {
         const { device_id, from, to } = req.query;

@@ -179,9 +179,10 @@ async function get_device_info(id) {
     const distance = parseFloat(latest.Total_VehicleDistance) || 0;
     const engineSpeed = parseFloat(latest.EngineSpeed_rpm) || 0;
     const time = new Date(latest.updatedAt).getTime();
+    const Ambient_Temperature = parseFloat(latest.Net_Battery_Current)
 
     // --- Idling detection via separate function
-    checkIdling(id, speed, engineSpeed, time, latest);
+    checkIdling(id, speed, engineSpeed, time, latest, Ambient_Temperature);
 
     // --- Over speed detection
     if (prevData[id]) {
@@ -227,7 +228,7 @@ async function get_device_info(id) {
 }
 
 // Idling detection in its own function
-function checkIdling(id, speed, engineSpeed, time, latest) {
+function checkIdling(id, speed, engineSpeed, time, latest, Ambient_temp) {
   if (!idlingFlags[id]) {
     idlingFlags[id] = { isIdling: false, startTime: null };
   }
@@ -245,6 +246,7 @@ function checkIdling(id, speed, engineSpeed, time, latest) {
     const logEntry = {
       vehicle: id,
       idlingDuration: duration,
+      Ambient_Temperature,
       startTime: new Date(idlingFlags[id].startTime).toISOString(),
       endTime: new Date(time).toISOString(),
       dateTime: new Date(latest.updatedAt).toISOString(),
