@@ -360,37 +360,37 @@ exports.all_data = async (req, res) => {
 };
 
 
-// exports.all_data = async (req, res) => {
+
+// exports.all_data_fromto = async (req, res) => {
 //   try {
-//     const { device_id, page = 1, limit = 100 } = req.body;
+//     const { device_id = "all", page = 1, limit = 100 } = req.body;
 
-//     // 🧩 Validate input
-//     if (!device_id) {
-//       return res.status(400).json({ success: false, message: "device_id is required" });
-//     }
-
-//     const skip = (page - 1) * limit;
-
-    
-//     let filter = {};
-
+//     // 🧠 Dynamic filter
+//     let filter = {
+//         createdAt: {
+//             $gte: new Date(`${from}T00:00:00Z`),
+//             $lte: new Date(`${to}T23:59:59Z`)
+//           }
+//     };
 //     if (device_id !== "all") {
 //       filter.device_id = device_id;
 //     }
 
+//     const skip = (page - 1) * limit;
 
-//     // ⚙️ Fetch all fields for this device_id
+//     // ⚙️ Fetch latest records (sorted by createdAt)
 //     const data = await All_device_info.find(filter)
-//       .sort({ createdAt: -1 }) // newest first
+//       .sort({ createdAt: -1 }) // latest first
 //       .skip(Number(skip))
 //       .limit(Number(limit))
-//       .lean(); // faster JSON output
+//       .lean();
 
-//     // ✅ Total count (optional, for pagination info)
+//     // ✅ Count total for pagination
 //     const total = await All_device_info.countDocuments(filter);
 
 //     res.status(200).json({
 //       success: true,
+//       device_id: device_id === "all" ? "All Devices" : device_id,
 //       page: Number(page),
 //       limit: Number(limit),
 //       total,
@@ -403,8 +403,6 @@ exports.all_data = async (req, res) => {
 //     res.status(500).json({ success: false, message: "Server Error" });
 //   }
 // };
-
-
 
 
 exports.Get_data_excle = async (req, res) => {
