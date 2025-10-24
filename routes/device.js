@@ -13,7 +13,7 @@ router.post("/get_device_info", devicecontroller.get_device_data);
 router.post("/get_all_data",devicecontroller.get_all_data);
 router.post("/total_sensor_data",devicecontroller.total_data);
 router.post("/all_data",devicecontroller.all_data);
-router.get("Get_data_excle",devicecontroller.Get_data_excle);
+router.get("/Get_data_excle",devicecontroller.Get_data_excle);
 
 
 router.post("/add_farme",Farme.add_farme);
