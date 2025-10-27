@@ -230,7 +230,7 @@ function decodePGN(pgn, data) {
       break;
     case 0xFEF5:
       result.IntakeTemp = data[0] - 40;
-      result.Net_Battery_Current = (((data[4] | (data[5] << 8)) * 0.03125 ) - 273).toFixed(2); //Ambient_temp
+      result.Net_Battery_Current = (((data[3] | (data[4] << 8)) * 0.03125 ) - 273).toFixed(2); //Ambient_temp
       break;
     case 0xFEF6:
       result.Engine_Turbocharger_Boost_Pressure = (data[1] * 2).toFixed(1);
