@@ -122,6 +122,8 @@ function mqtt_controller(topic) {
 );
 
 const id = payload.id;
+const long_c = payload.long;
+const lat_c = payload.lat;
 await insertfarme(id, payload.frames);
 
 const mergedDecoded = {};
@@ -152,6 +154,8 @@ for (const [key, value] of Object.entries(filtered_d)) {
 // Build final json_data from mergedDecoded
 const json_data = {
   device_id: id,
+  lat : lat_c,
+  long : long_c,
   Total_VehicleDistance: mergedDecoded?.Total_VehicleDistance ?? "",
   EngineSpeed_rpm: mergedDecoded?.EngineSpeed_rpm ?? "",
   WheelBasedSpeed_kph: mergedDecoded?.WheelBasedSpeed_kph ?? "",
@@ -226,7 +230,7 @@ function decodePGN(pgn, data) {
       break;
     case 0xFEF5:
       result.IntakeTemp = data[0] - 40;
-      result.Net_Battery_Current = (((data[5] | (data[6] << 8)) * 0.03125 ) - 273).toFixed(2); //Ambient_temp
+      result.Net_Battery_Current = (((data[4] | (data[5] << 8)) * 0.03125 ) - 273).toFixed(2); //Ambient_temp
       break;
     case 0xFEF6:
       result.Engine_Turbocharger_Boost_Pressure = (data[1] * 2).toFixed(1);
