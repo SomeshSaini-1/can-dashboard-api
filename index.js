@@ -223,7 +223,7 @@ function decodePGN(pgn, data) {
       result.BrakeSwitch = (b4 & 0x30) >> 4;
       result.CruiseControlEnableSwitch = (b4 & 0x0C) >> 2;
       result.CruiseControlActive = b4 & 0x03;
-      result.CruiseSetSpeed_kph = b6 === 0xFF ? "N/A" : (b6 / 256).toFixed(2);
+      result.CruiseSetSpeed_kph = b6 === 0xFF ? "--" : (b6 / 256).toFixed(2);
       break;
     case 0xFEEE:
       result.EngineCoolantTemp = data[0] - 40;
@@ -235,11 +235,11 @@ function decodePGN(pgn, data) {
     case 0xFEF6:
       result.Engine_Turbocharger_Boost_Pressure = (data[1] * 2).toFixed(1);
       result.Engine_AirIntakeManifold1_Temperature = (data[2] - 40).toFixed(1);
-      result.Engine_AirInlet_Pressure = (data[3] * 2).toFixed(1);
+      result.Engine_AirInlet_Pressure = (data[3] * 2).toFixed(1); 
       break;
     case 0xFEF7:
-      // result.Net_Battery_Current = (data[0] - 125).toFixed(1) || "N/A";
-      result.Battery_Potential_s = (data[2] * 0.05).toFixed(1) || "N/A";
+      // result.Net_Battery_Current = (data[0] - 125).toFixed(1) || "--";
+      result.Battery_Potential_s = (data[2] * 0.05).toFixed(1) || "--";
       result.BatteryVoltage_V = ((data[4] | (data[5] << 8)) * 0.05).toFixed(2);
       break;
     case 0xFEFC:
