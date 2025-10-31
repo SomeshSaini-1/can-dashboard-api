@@ -9,6 +9,7 @@ router.post("/get_alert",alertcontroller.get_alert);
 
 router.post("/Add_geofance",Geofancecontroller.Add_geofance);
 router.post("/Get_geofance",Geofancecontroller.Get_geofance);
+router.post("/Delete_geofance",Geofancecontroller.Delete_geofance);
 
 
 module.exports = router;
