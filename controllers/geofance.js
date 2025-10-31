@@ -23,7 +23,7 @@ exports.Get_geofance = async (req,res) => {
         if(name === "all"){
             data = await Geofance.find();
         }else{
-            data = await Geofance.find({name});
+            data = await Geofance.find({Name :name});
         }
 
         res.status(200).json(data);
