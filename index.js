@@ -77,11 +77,11 @@ function mqtt_controller(topic) {
       payload = message.toString();
     }
 
-    console.log(mqttTopic,'mqttTopic')
+    console.log(mqttTopic, 'mqttTopic')
     if (payload === "CAN data not received") return;
-    if (mqttTopic.includes('status')){
-       await device_status(mqttTopic.split("/")[1],payload);
-        return
+    if (mqttTopic.includes('status')) {
+      await device_status(mqttTopic.split("/")[1], payload);
+      return
     }
 
     // const filtered_d = payload && Object.fromEntries(
@@ -94,7 +94,7 @@ function mqtt_controller(topic) {
     // for (const [key, value] of Object.entries(filtered_d)) {
     //   let frame = `${key} , ${value}`;
 
-      
+
     // const [pgnHex, dataHex] = frame.split(",").map(s => s.trim());
     // if (!pgnHex
     //    || !dataHex 
@@ -118,77 +118,77 @@ function mqtt_controller(topic) {
 
 
     const filtered_d = payload && Object.fromEntries(
-  Object.entries(payload.frames).map(([key, value]) => [`${key.slice(2, 6)}`, value])
-);
+      Object.entries(payload.frames).map(([key, value]) => [`${key.slice(2, 6)}`, value])
+    );
 
-const id = payload.id;
-const long_c = payload.long;
-const lat_c = payload.lat;
-await insertfarme(id, payload.frames);
+    const id = payload.id;
+    const long_c = payload.long;
+    const lat_c = payload.lat;
+    await insertfarme(id,long_c ,lat_c ,payload.frames);
 
-const mergedDecoded = {};
+    const mergedDecoded = {};
 
-for (const [key, value] of Object.entries(filtered_d)) {
-  const frame = `${key}, ${value}`;
-  const [pgnHex, dataHex] = frame.split(",").map(s => s.trim());
+    for (const [key, value] of Object.entries(filtered_d)) {
+      const frame = `${key}, ${value}`;
+      const [pgnHex, dataHex] = frame.split(",").map(s => s.trim());
 
-  if (!pgnHex || !dataHex || dataHex === "FFFFFFFFFFFFFFFF") {
-    console.log(`Skipping malformed frame: ${frame}`);
-    continue;
-  }
+      if (!pgnHex || !dataHex || dataHex === "FFFFFFFFFFFFFFFF") {
+        console.log(`Skipping malformed frame: ${frame}`);
+        continue;
+      }
 
-  try {
-    const { pgn, data } = parseFrame(key, value);
-    const decoded = decodePGN(pgn, data);
+      try {
+        const { pgn, data } = parseFrame(key, value);
+        const decoded = decodePGN(pgn, data);
 
-    io.emit("mqtt_message", { id, decoded });
+        io.emit("mqtt_message", { id, decoded });
 
-    // Merge decoded values into one object
-    Object.assign(mergedDecoded, decoded);
+        // Merge decoded values into one object
+        Object.assign(mergedDecoded, decoded);
 
-  } catch (error) {
-    console.error(`Error processing frame ${frame}:`, error);
-  }
-}
+      } catch (error) {
+        console.error(`Error processing frame ${frame}:`, error);
+      }
+    }
 
-// Build final json_data from mergedDecoded
-const json_data = {
-  device_id: id,
-  lat : lat_c,
-  long : long_c,
-  Total_VehicleDistance: mergedDecoded?.Total_VehicleDistance ?? "",
-  EngineSpeed_rpm: mergedDecoded?.EngineSpeed_rpm ?? "",
-  WheelBasedSpeed_kph: mergedDecoded?.WheelBasedSpeed_kph ?? "",
-  EngineCoolantTemp: mergedDecoded?.EngineCoolantTemp ?? "",
-  BatteryVoltage_V: mergedDecoded?.BatteryVoltage_V ?? "",
-  CruiseSetSpeed_kph: mergedDecoded?.CruiseSetSpeed_kph ?? "",
-  IntakeTemp: mergedDecoded?.IntakeTemp ?? "",
-  Engine_Turbocharger_Boost_Pressure: mergedDecoded?.Engine_Turbocharger_Boost_Pressure ?? "",
-  Engine_AirIntakeManifold1_Temperature: mergedDecoded?.Engine_AirIntakeManifold1_Temperature ?? "",
-  Engine_AirInlet_Pressure: mergedDecoded?.Engine_AirInlet_Pressure ?? "",
-  Net_Battery_Current: mergedDecoded?.Net_Battery_Current ?? "",
-  Battery_Potential_s: mergedDecoded?.Battery_Potential_s ?? "",
-  FuelLevel_Percent: mergedDecoded?.FuelLevel_Percent ?? "",
-  EngineOilPressure_kPa: mergedDecoded?.EngineOilPressure_kPa ?? "",
-  Engine_Crankcase_Pressure: mergedDecoded?.Engine_Crankcase_Pressure ?? "",
-  Engine_Throttle_Position: mergedDecoded?.Engine_Throttle_Position ?? "",
-  Engine_Fuel_Rate: mergedDecoded?.Engine_Fuel_Rate ?? "",
-  Pedal_Position: mergedDecoded?.Pedal_Position ?? "",
-  Engine_Load: mergedDecoded?.Engine_Load ?? "",
-  Engine_TripFuel: mergedDecoded?.Engine_TripFuel ?? "",
-  Engine_Total_FuelUsed: mergedDecoded?.Engine_Total_FuelUsed ?? "",
-  Engine_TotalHours: mergedDecoded?.Engine_TotalHours ?? "",
-  Engine_Total_Revolutions: mergedDecoded?.Engine_Total_Revolutions ?? "",
-  ExhaustGasTemp_C: mergedDecoded?.ExhaustGasTemp_C ?? "",
-  TurboInletTemp_C: mergedDecoded?.TurboInletTemp_C ?? "",
-  Transmission_Current_Gear: mergedDecoded?.Transmission_Current_Gear ?? "",
-  Catalyst_Level: mergedDecoded?.Catalyst_Level ?? "",
-  status: mergedDecoded?.status ?? ""
-};
+    // Build final json_data from mergedDecoded
+    const json_data = {
+      device_id: id,
+      lat: lat_c,
+      long: long_c,
+      Total_VehicleDistance: mergedDecoded?.Total_VehicleDistance ?? "",
+      EngineSpeed_rpm: mergedDecoded?.EngineSpeed_rpm ?? "",
+      WheelBasedSpeed_kph: mergedDecoded?.WheelBasedSpeed_kph ?? "",
+      EngineCoolantTemp: mergedDecoded?.EngineCoolantTemp ?? "",
+      BatteryVoltage_V: mergedDecoded?.BatteryVoltage_V ?? "",
+      CruiseSetSpeed_kph: mergedDecoded?.CruiseSetSpeed_kph ?? "",
+      IntakeTemp: mergedDecoded?.IntakeTemp ?? "",
+      Engine_Turbocharger_Boost_Pressure: mergedDecoded?.Engine_Turbocharger_Boost_Pressure ?? "",
+      Engine_AirIntakeManifold1_Temperature: mergedDecoded?.Engine_AirIntakeManifold1_Temperature ?? "",
+      Engine_AirInlet_Pressure: mergedDecoded?.Engine_AirInlet_Pressure ?? "",
+      Net_Battery_Current: mergedDecoded?.Net_Battery_Current ?? "",
+      Battery_Potential_s: mergedDecoded?.Battery_Potential_s ?? "",
+      FuelLevel_Percent: mergedDecoded?.FuelLevel_Percent ?? "",
+      EngineOilPressure_kPa: mergedDecoded?.EngineOilPressure_kPa ?? "",
+      Engine_Crankcase_Pressure: mergedDecoded?.Engine_Crankcase_Pressure ?? "",
+      Engine_Throttle_Position: mergedDecoded?.Engine_Throttle_Position ?? "",
+      Engine_Fuel_Rate: mergedDecoded?.Engine_Fuel_Rate ?? "",
+      Pedal_Position: mergedDecoded?.Pedal_Position ?? "",
+      Engine_Load: mergedDecoded?.Engine_Load ?? "",
+      Engine_TripFuel: mergedDecoded?.Engine_TripFuel ?? "",
+      Engine_Total_FuelUsed: mergedDecoded?.Engine_Total_FuelUsed ?? "",
+      Engine_TotalHours: mergedDecoded?.Engine_TotalHours ?? "",
+      Engine_Total_Revolutions: mergedDecoded?.Engine_Total_Revolutions ?? "",
+      ExhaustGasTemp_C: mergedDecoded?.ExhaustGasTemp_C ?? "",
+      TurboInletTemp_C: mergedDecoded?.TurboInletTemp_C ?? "",
+      Transmission_Current_Gear: mergedDecoded?.Transmission_Current_Gear ?? "",
+      Catalyst_Level: mergedDecoded?.Catalyst_Level ?? "",
+      status: mergedDecoded?.status ?? ""
+    };
 
-// Store the final merged result
-await store_value(json_data);
-  // console.log(id, json_data);
+    // Store the final merged result
+    await store_value(json_data);
+    // console.log(id, json_data);
 
 
 
@@ -230,12 +230,12 @@ function decodePGN(pgn, data) {
       break;
     case 0xFEF5:
       result.IntakeTemp = data[0] - 40;
-      result.Net_Battery_Current = (((data[3] | (data[4] << 8)) * 0.03125 ) - 273).toFixed(2); //Ambient_temp
+      result.Net_Battery_Current = (((data[3] | (data[4] << 8)) * 0.03125) - 273).toFixed(2); //Ambient_temp
       break;
     case 0xFEF6:
       result.Engine_Turbocharger_Boost_Pressure = (data[1] * 2).toFixed(1);
       result.Engine_AirIntakeManifold1_Temperature = (data[2] - 40).toFixed(1);
-      result.Engine_AirInlet_Pressure = (data[3] * 2).toFixed(1); 
+      result.Engine_AirInlet_Pressure = (data[3] * 2).toFixed(1);
       break;
     case 0xFEF7:
       // result.Net_Battery_Current = (data[0] - 125).toFixed(1) || "--";
@@ -274,7 +274,7 @@ function decodePGN(pgn, data) {
       result.TurboInletTemp_C = ((data[1] | (data[2] << 8)) * 0.03125 - 273).toFixed(1);
       break;
     case 0xF005:
-      result.Transmission_Current_Gear = data[3]; 
+      result.Transmission_Current_Gear = data[3];
       break;
     case 0xFE56:
       result.Catalyst_Level = (data[0] * 0.4).toFixed(1);
@@ -286,7 +286,7 @@ function decodePGN(pgn, data) {
 }
 
 async function store_value(json_data) {
-  console.log("store the data",json_data)
+  console.log("store the data", json_data)
   try {
     // const json_data = {
     //   device_id: id,
@@ -336,28 +336,28 @@ async function store_value(json_data) {
   }
 }
 
-async function device_status(id,data){
+async function device_status(id, data) {
   try {
-    
+
     const json_data = {
       device_id: id,
-      status : data || ""
+      status: data || ""
     }
-  const url = await fetch("https://oxymora-can-api.otplai.com/api/update_device_status", {
+    const url = await fetch("https://oxymora-can-api.otplai.com/api/update_device_status", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(json_data),
     });
 
     const res = await url.json();
-    console.log(res,"devic status.");
+    console.log(res, "devic status.");
 
   } catch (error) {
     console.log(error);
   }
 }
 
-async function insertfarme(id, data) {
+async function insertfarme(id, long, lat, data) {
   try {
     const bodyData = { device_id: id, farme: data };
     console.log(JSON.stringify(bodyData), "farme data");
