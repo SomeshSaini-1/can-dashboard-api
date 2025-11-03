@@ -82,7 +82,7 @@
 //         console.log(speed ,'HarshAcceleration');
 //         saveLog("HarshAcceleration",logEntry);
 //       }
-      
+
 
 //       if(prev.speed - speed > 12) {
 //         const logEntry = {
@@ -94,7 +94,7 @@
 //       }
 
 //           // dateTime: new Date(latest.updatedAt).toISOString(),
-          
+
 //     // "over_speed": "Over Speed",
 //     // "HarshAcceleration": "Harsh Acceleration",
 //     // "Idling": "Idling",
@@ -106,7 +106,7 @@
 //     }
 
 //     prevData[id] = {speed, distance, time };
-    
+
 //   } catch (error) {
 //     console.error("Error fetching device info:", error);
 //   }
@@ -393,39 +393,33 @@ function isPointInsidePolygon(point, polygonLatLngs) {
 }
 
 // Utility: Check if a point is inside a circle using Turf.js
-function isPointInsideCircle(id,date,name,point, center, radius) {
+function isPointInsideCircle(id, date, name, point, center, radius) {
   const pt = turf.point([point[1], point[0]]);
   const ctr = turf.point([center[1], center[0]]);
   const distance = turf.distance(ctr, pt, { units: "meters" });
+
   const tolerance = 10; // meters
   const delta = distance - radius; // >0 => outside, <0 => inside
 
-  if (Math.abs(delta) <= tolerance) {
-    // Near the boundary
+  if (delta >= -tolerance && delta < 0) {
+    // Near boundary (inside)
     const logEntry = {
       location: `${id} inside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
     saveLog("Geofence", logEntry);
-  } else if (5 <= delta >= tolerance) {
-    console.log(delta , tolerance)
-    // Outside the circle
+  } else if (delta > 0 && delta <= tolerance) {
+    // Near boundary (outside)
+    console.log(delta, tolerance);
     const logEntry = {
       location: `${id} outside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
     saveLog("Geofence", logEntry);
-  } 
-  // else {
-  //   // Inside the circle
-  //   const logEntry = {
-  //     location: `${id} inside ${name}`,
-  //     dateTime: new Date(date).toISOString(),
-  //   };
-  //   saveLog("Geofence", logEntry);
-  // }
+  }
 
-  console.log(distance,radius,Math.abs(delta) , tolerance ,"Geofence")
+
+  console.log(distance, radius, delta, tolerance, "Geofence")
   return distance <= radius;
 }
 
@@ -438,13 +432,13 @@ async function geofance_cheker(id, lat, lng) {
     const response = await fetch(`${apiurl}/Get_geofance`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name:  "all" }),
+      body: JSON.stringify({ name: "all" }),
     });
     const geoFences = await response.json();
 
     // console.log("API Data:", geoFences);
-    
-    
+
+
     geoFences.forEach((fence, index) => {
       const geo = fence.Data[0];
       if (!geo) return;
@@ -517,7 +511,7 @@ function formatDuration(seconds) {
 // Logging wrapper to send to API
 async function saveLog(type, entry) {
   try {
-    console.log(entry,type,"savelogs")
+    console.log(entry, type, "savelogs")
     const response = await fetch(`${apiurl}/add_alert`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
