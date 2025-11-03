@@ -458,7 +458,7 @@ function isPointInsideCircle(id, date, name, point, center, radius) {
   }
 
 
-  // console.log(distance, radius, delta, tolerance, "Geofence")
+  console.log(distance, radius, delta, tolerance, "Geofence")
   return distance <= radius;
 }
 
