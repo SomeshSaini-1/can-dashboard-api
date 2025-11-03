@@ -282,7 +282,10 @@
 // import fetch from "node-fetch"; npm install @turf/turf
 
 // import turf from "@turf/turf";
-import * as turf from "@turf/turf";
+// import * as turf from "@turf/turf";
+
+// ✅ Correct
+const turf = require("@turf/turf");
 
 const SPEED_LIMIT = 60; // km/h limit
 const prevData = {};
@@ -403,21 +406,21 @@ function isPointInsideCircle(id,date,name,point, center, radius) {
       location: `${id} near boundary of ${name}`,
       dateTime: new Date(date).toISOString(),
     };
-    // saveLog("GeofenceBoundary", logEntry);
+    // saveLog("Geofence", logEntry);
   } else if (delta > tolerance) {
     // Outside the circle
     const logEntry = {
       location: `${id} outside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
-    saveLog("GeofenceExit", logEntry);
+    saveLog("Geofence", logEntry);
   } else {
     // Inside the circle
     const logEntry = {
       location: `${id} inside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
-    saveLog("GeofenceEnter", logEntry);
+    saveLog("Geofence", logEntry);
   }
 
   console.log(distance,radius,distance - radius)
