@@ -283,8 +283,6 @@
 
 // import turf from "@turf/turf";
 // import * as turf from "@turf/turf";
-
-// ✅ Correct
 const turf = require("@turf/turf");
 
 const SPEED_LIMIT = 60; // km/h limit
@@ -299,6 +297,8 @@ async function fetchDevices() {
     body: JSON.stringify({ device_id: "all" }),
     headers: { "Content-Type": "application/json" },
   });
+
+
   const res = await response.json();
 
   res.forEach((ele) => {
@@ -397,39 +397,41 @@ function isPointInsideCircle(id,date,name,point, center, radius) {
   const pt = turf.point([point[1], point[0]]);
   const ctr = turf.point([center[1], center[0]]);
   const distance = turf.distance(ctr, pt, { units: "meters" });
-  const tolerance = 5; // meters
+  const tolerance = 10; // meters
   const delta = distance - radius; // >0 => outside, <0 => inside
 
   if (Math.abs(delta) <= tolerance) {
     // Near the boundary
     const logEntry = {
-      location: `${id} near boundary of ${name}`,
+      location: `${id} inside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
-    // saveLog("Geofence", logEntry);
-  } else if (delta > tolerance) {
+    saveLog("Geofence", logEntry);
+  } else if (5 <= delta >= tolerance) {
+    console.log(delta , tolerance)
     // Outside the circle
     const logEntry = {
       location: `${id} outside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
     saveLog("Geofence", logEntry);
-  } else {
-    // Inside the circle
-    const logEntry = {
-      location: `${id} inside ${name}`,
-      dateTime: new Date(date).toISOString(),
-    };
-    saveLog("Geofence", logEntry);
-  }
+  } 
+  // else {
+  //   // Inside the circle
+  //   const logEntry = {
+  //     location: `${id} inside ${name}`,
+  //     dateTime: new Date(date).toISOString(),
+  //   };
+  //   saveLog("Geofence", logEntry);
+  // }
 
-  console.log(distance,radius,distance - radius)
+  console.log(distance,radius,Math.abs(delta) , tolerance ,"Geofence")
   return distance <= radius;
 }
 
 async function geofance_cheker(id, lat, lng) {
   try {
-    console.log(id,lat,lng);
+    // console.log(id,lat,lng);
 
     if (lat === 0 && lng === 0) return;
 
@@ -440,7 +442,7 @@ async function geofance_cheker(id, lat, lng) {
     });
     const geoFences = await response.json();
 
-    console.log("API Data:", geoFences);
+    // console.log("API Data:", geoFences);
     
     
     geoFences.forEach((fence, index) => {
@@ -462,7 +464,7 @@ async function geofance_cheker(id, lat, lng) {
       } else if (geo.type === "Polygon" && Array.isArray(geo.Data)) {
         // Polygon geofence check
         const inside = isPointInsidePolygon([lat, lng], geo.Data);
-        console.log([lat, lng], geo);
+        // console.log([lat, lng], geo);
         console.log(`Geofence ${fence.Name} (Polygon) - Point inside:`, inside);
 
       } else {
