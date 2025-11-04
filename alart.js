@@ -458,13 +458,13 @@ function isPointInsideCircle(id, date, name, point, center, radius) {
   }
 
 
-  console.log(distance, radius, delta, tolerance, "Geofence")
+  console.log(distance, radius, delta, tolerance,id, "Geofence")
   return distance <= radius;
 }
 
 async function geofance_cheker(id, lat, lng) {
   try {
-    // console.log(id,lat,lng);
+    console.log(id,lat,lng);
 
     if (lat === 0 && lng === 0) return;
 

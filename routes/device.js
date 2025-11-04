@@ -15,6 +15,8 @@ router.post("/total_sensor_data",devicecontroller.total_data);
 router.post("/all_data",devicecontroller.all_data);
 router.get("/Get_data_excle",devicecontroller.Get_data_excle);
 
+router.post("/DataHistory",devicecontroller.DataHistory);
+
 
 router.post("/add_farme",Farme.add_farme);
 router.post("/get_farme",Farme.get_farme);

@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 const info_schema = new mongoose.Schema({
     device_id: { type: String, required: true, unique: true },
-    lat: { type: String, default: "--" },
-    long: { type: String, default: "--" },
+    lat: { type: String, default: 0 },
+    long: { type: String, default: 0 },
     Total_VehicleDistance: { type: String, default: "--" },
     EngineSpeed_rpm: { type: String, default: "--" },
     WheelBasedSpeed_kph: { type: String, default: "--" },
