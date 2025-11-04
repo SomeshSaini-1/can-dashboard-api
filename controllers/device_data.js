@@ -465,28 +465,30 @@ exports.Get_data_excle = async (req, res) => {
 
 exports.DataHistory = async (req, res) => {
   try {
-    const { device_id = "all", startdate, enddate } = req.body;
+    const { device_id = "all",  startdate,enddate} = req.body;
 
-    const filter = {};
+    // 🧠 Dynamic filter with date range
+    let filter = {
+      createdAt: {
+        $gte: new Date(`${startdate}T00:00:00Z`),
+        $lte: new Date(`${enddate}T23:59:59Z`)
+      }
+    };
 
-    // ✅ Validate and add date filters only if they are valid
-    if (startdate && !isNaN(Date.parse(startdate))) {
-      filter.createdAt = { ...filter.createdAt, $gte: new Date(`${startdate}T00:00:00Z`) };
-    }
-
-    if (enddate && !isNaN(Date.parse(enddate))) {
-      filter.createdAt = { ...filter.createdAt, $lte: new Date(`${enddate}T23:59:59Z`) };
-    }
-
-    // ✅ Add device filter
-    if (device_id !== "all") {
+    if (device_id != "all") {
       filter.device_id = device_id;
     }
 
-    console.log("Applied Filter:", filter);
+    const skip = (page - 1) * limit;
 
-    // ⚙️ Fetch records
-    const data = await All_device_info.find(filter).lean();
+    // ⚙️ Fetch latest records (sorted by createdAt)
+    const data = await All_device_info.find(filter)
+      // .sort({ createdAt: -1 }) // latest first
+      // .skip(Number(skip))
+      // .limit(Number(limit))
+      .lean();
+
+    // ✅ Count total for pagination
     const total = await All_device_info.countDocuments(filter);
 
     res.status(200).json({
@@ -496,7 +498,6 @@ exports.DataHistory = async (req, res) => {
       count: data.length,
       data,
     });
-
   } catch (error) {
     console.error("❌ Error fetching data:", error);
     res.status(500).json({ success: false, message: "Server Error" });
