@@ -475,7 +475,7 @@ exports.DataHistory = async (req, res) => {
       }
     };
 
-    if (device_id !== "all") {
+    if (device_id != "all") {
       filter.device_id = device_id;
     }
 
