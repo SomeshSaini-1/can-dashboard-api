@@ -498,8 +498,8 @@ exports.DataHistory = async (req, res) => {
     const [data, total] = await Promise.all([
       All_device_info.find(filter)
         .sort({ createdAt: -1 }) // Latest first
-        .skip(skip)
-        .limit(limit)
+        // .skip(skip)
+        // .limit(limit)
         .lean(),
       All_device_info.countDocuments(filter),
     ]);
