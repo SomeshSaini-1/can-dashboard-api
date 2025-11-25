@@ -379,56 +379,98 @@ async function get_device_info(id) {
 
 
 
-// // ✅ Check if a point is inside a polygon
-// function isPointInsidePolygon(point, polygonLatLngs) {
-//   console.log(point, polygonLatLngs)
+
+// // ✅ Check if a point is inside, outside, or near the polygon boundary
+// function isPointInsidePolygon(id , name,date, point, polygonLatLngs, tolerance = 10) {
+//   // Create turf point
 //   const pt = turf.point([point[1], point[0]]);
-//   const polygon = turf.polygon([[...polygonLatLngs.map(p => [p.lng, p.lat]), [polygonLatLngs[0].lng, polygonLatLngs[0].lat]]]);
-//   console.log(turf.booleanPointInPolygon(pt, polygon),"polygon")
-//   return turf.booleanPointInPolygon(pt, polygon);
+
+//   // Create turf polygon
+//   const polygon = turf.polygon([
+//     [...polygonLatLngs.map(p => [p.lng, p.lat]), [polygonLatLngs[0].lng, polygonLatLngs[0].lat]],
+//   ]);
+
+//   // Check inside polygon
+//   const isInside = turf.booleanPointInPolygon(pt, polygon);
+
+//   // Calculate distance to polygon boundary (in meters)
+//   const distanceToBoundary = turf.pointToLineDistance(pt, turf.polygonToLine(polygon), { units: "meters" });
+
+//   console.log(distanceToBoundary,"distanceToBoundary",tolerance)
+//   // Determine condition
+//   if (isInside && distanceToBoundary < 0 && distanceToBoundary <= tolerance ) {
+//     // return "near-boundary-inside"; // inside but close to edge
+    
+//     const logEntry = {
+//       location: `${id} inside ${name}`,
+//       dateTime: new Date(date).toISOString(),
+//     };
+//     console.log("Geofence", logEntry);c
+//     saveLog("Geofence", logEntry);
+
+//   } else if (!isInside && distanceToBoundary < 0  && distanceToBoundary <= tolerance) {
+//     // return "near-boundary-outside"; // outside but close to edge
+    
+//     const logEntry = {
+//       location: `${id} outside ${name}`,
+//       dateTime: new Date(date).toISOString(),
+//     };
+//     console.log("Geofence", logEntry);
+//     saveLog("Geofence", logEntry);
+//   }
+  
+//     return isInside;
+ 
 // }
 
+function isPointInsidePolygon(id, name, date, point, polygonLatLngs, tolerance = 100) {
+  // Validate inputs
+  if (!Array.isArray(point) || point.length !== 2 || !Array.isArray(polygonLatLngs) || polygonLatLngs.length < 3) {
+    console.error("Invalid point or polygonLatLngs");
+    return false;
+  }
 
-// ✅ Check if a point is inside, outside, or near the polygon boundary
-function isPointInsidePolygon(id , name,date, point, polygonLatLngs, tolerance = 10) {
-  // Create turf point
+  // Create turf point (longitude, latitude)
   const pt = turf.point([point[1], point[0]]);
 
-  // Create turf polygon
-  const polygon = turf.polygon([
-    [...polygonLatLngs.map(p => [p.lng, p.lat]), [polygonLatLngs[0].lng, polygonLatLngs[0].lat]],
-  ]);
+  // Build polygon ring and close the polygon
+  const ring = polygonLatLngs.map(p => [p.lng, p.lat]);
+  ring.push([polygonLatLngs[0].lng, polygonLatLngs[0].lat]);
 
-  // Check inside polygon
+  const polygon = turf.polygon([ring]);
+
+  // Check if the point is inside the polygon
   const isInside = turf.booleanPointInPolygon(pt, polygon);
 
-  // Calculate distance to polygon boundary (in meters)
-  const distanceToBoundary = turf.pointToLineDistance(pt, turf.polygonToLine(polygon), { units: "meters" });
+  // Calculate distance from point to polygon boundary in meters
+  const distanceToBoundary = turf.pointToLineDistance(
+    pt,
+    turf.polygonToLine(polygon),
+    { units: "meters" }
+  );
 
-  console.log(distanceToBoundary,"distanceToBoundary")
-  // Determine condition
-  if (isInside && distanceToBoundary < 0 && distanceToBoundary <= tolerance ) {
-    // return "near-boundary-inside"; // inside but close to edge
-    
+  console.log("distanceToBoundary(m):", distanceToBoundary, "tolerance:", tolerance,id);
+
+  if (isInside && distanceToBoundary <= tolerance) {
     const logEntry = {
       location: `${id} inside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
+    console.log("Geofence", logEntry);
     saveLog("Geofence", logEntry);
 
-  } else if (!isInside && distanceToBoundary < 0  && distanceToBoundary <= tolerance) {
-    // return "near-boundary-outside"; // outside but close to edge
-    
+  } else if (!isInside && distanceToBoundary <= tolerance) {
     const logEntry = {
       location: `${id} outside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
+    console.log("Geofence", logEntry);
     saveLog("Geofence", logEntry);
   }
-  
-    return isInside;
- 
+
+  return isInside;
 }
+
 
 
 // Utility: Check if a point is inside a circle using Turf.js
@@ -446,6 +488,7 @@ function isPointInsideCircle(id, date, name, point, center, radius) {
       location: `${id} inside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
+    console.log("Geofence", logEntry);
     saveLog("Geofence", logEntry);
   } else if (delta > 0 && delta <= tolerance) {
     // Near boundary (outside)
@@ -454,6 +497,7 @@ function isPointInsideCircle(id, date, name, point, center, radius) {
       location: `${id} outside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
+    console.log("Geofence", logEntry);
     saveLog("Geofence", logEntry);
   }
 
