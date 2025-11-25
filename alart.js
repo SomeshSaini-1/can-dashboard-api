@@ -453,6 +453,7 @@ function isPointInsidePolygon(id, name, date, point, polygonLatLngs, tolerance =
 
   if (isInside && distanceToBoundary <= tolerance) {
     const logEntry = {
+      id: id,
       location: `${id} inside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
@@ -461,6 +462,7 @@ function isPointInsidePolygon(id, name, date, point, polygonLatLngs, tolerance =
 
   } else if (!isInside && distanceToBoundary <= tolerance) {
     const logEntry = {
+      id: id,
       location: `${id} outside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
@@ -485,6 +487,7 @@ function isPointInsideCircle(id, date, name, point, center, radius) {
   if (delta >= -tolerance && delta < 0) {
     // Near boundary (inside)
     const logEntry = {
+      id: id,
       location: `${id} inside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
@@ -494,6 +497,7 @@ function isPointInsideCircle(id, date, name, point, center, radius) {
     // Near boundary (outside)
     // console.log(delta, tolerance);
     const logEntry = {
+      id: id,
       location: `${id} outside ${name}`,
       dateTime: new Date(date).toISOString(),
     };
