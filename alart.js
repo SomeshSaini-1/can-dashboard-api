@@ -449,7 +449,7 @@ function isPointInsidePolygon(id, name, date, point, polygonLatLngs, tolerance =
     { units: "meters" }
   );
 
-  console.log("distanceToBoundary(m):", distanceToBoundary, "tolerance:", tolerance,id);
+  console.log(isInside,"distanceToBoundary(m):", distanceToBoundary, "tolerance:", tolerance,id);
 
   if (isInside && distanceToBoundary <= tolerance) {
     const logEntry = {
