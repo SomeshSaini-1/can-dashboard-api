@@ -120,6 +120,7 @@ function mqtt_controller(topic) {
     const filtered_d = payload && Object.fromEntries(
       Object.entries(payload.frames).map(([key, value]) => [`${key.slice(2, 6)}`, value])
     );
+    console.log(payload,'payload')
 
     const id = payload.id;
     const long_c = payload.long;

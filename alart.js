@@ -63,7 +63,7 @@
 //           overSpeed: overSpeed,
 //           duration: duration,
 //           distanceTravelled: Number(distanceDiff.toFixed(2)),
-//           dateTime: new Date(latest.updatedAt).toISOString(),
+//           dateTime: new Date().toLocaleString(),
 //         };
 
 
@@ -77,7 +77,7 @@
 //       if(speed - prev.speed > 12){
 //         const logEntry = {
 //            vehicle: id,
-//            dateTime: new Date(latest.updatedAt).toISOString(),
+//            dateTime: new Date().toLocaleString(),
 //         }
 //         console.log(speed ,'HarshAcceleration');
 //         saveLog("HarshAcceleration",logEntry);
@@ -87,13 +87,13 @@
 //       if(prev.speed - speed > 12) {
 //         const logEntry = {
 //            vehicle: id,
-//            dateTime: new Date(latest.updatedAt).toISOString(),
+//            dateTime: new Date().toLocaleString(),
 //         }
 //         console.log(speed ,'HardBrake');
 //         saveLog("HardBrake",logEntry);
 //       }
 
-//           // dateTime: new Date(latest.updatedAt).toISOString(),
+//           // dateTime: new Date().toLocaleString(),
 
 //     // "over_speed": "Over Speed",
 //     // "HarshAcceleration": "Harsh Acceleration",
@@ -198,7 +198,7 @@
 //           overSpeed: overSpeed,
 //           duration: duration,
 //           distanceTravelled: Number(distanceDiff.toFixed(2)),
-//           dateTime: new Date(latest.updatedAt).toISOString(),
+//           dateTime: new Date().toLocaleString(),
 //         };
 //         saveLog("Over Speed", logEntry2);
 //       }
@@ -207,7 +207,7 @@
 //       if(speed - prev.speed > 12){
 //         const logEntry = {
 //           vehicle: id,
-//           dateTime: new Date(latest.updatedAt).toISOString(),
+//           dateTime: new Date().toLocaleString(),
 //         }
 //         saveLog("HarshAcceleration", logEntry);
 //       }
@@ -216,7 +216,7 @@
 //       if(prev.speed - speed > 12) {
 //         const logEntry = {
 //           vehicle: id,
-//           dateTime: new Date(latest.updatedAt).toISOString(),
+//           dateTime: new Date().toLocaleString(),
 //         }
 //         saveLog("HardBrake", logEntry);
 //       }
@@ -249,7 +249,7 @@
 //       Ambient_Temperature,
 //       startTime: new Date(idlingFlags[id].startTime).toISOString(),
 //       endTime: new Date(time).toISOString(),
-//       dateTime: new Date(latest.updatedAt).toISOString(),
+//       dateTime: new Date().toLocaleString(),
 //     };
 //     saveLog("Idling", logEntry);
 //     idlingFlags[id].isIdling = false;
@@ -347,7 +347,7 @@ async function get_device_info(id) {
           overSpeed: overSpeed,
           duration: duration,
           distanceTravelled: Number(distanceDiff.toFixed(2)),
-          dateTime: new Date(latest.updatedAt).toISOString(),
+          dateTime: new Date().toLocaleString(),
         };
         saveLog("Over Speed", logEntry2);
       }
@@ -356,7 +356,7 @@ async function get_device_info(id) {
       if (speed - prev.speed > 12) {
         const logEntry = {
           vehicle: id,
-          dateTime: new Date(latest.updatedAt).toISOString(),
+          dateTime: new Date().toLocaleString(),
         };
         saveLog("HarshAcceleration", logEntry);
       }
@@ -365,7 +365,7 @@ async function get_device_info(id) {
       if (prev.speed - speed > 12) {
         const logEntry = {
           vehicle: id,
-          dateTime: new Date(latest.updatedAt).toISOString(),
+          dateTime: new Date().toLocaleString(),
         };
         saveLog("HardBrake", logEntry);
       }
@@ -400,30 +400,30 @@ async function get_device_info(id) {
 //   // Determine condition
 //   if (isInside && distanceToBoundary < 0 && distanceToBoundary <= tolerance ) {
 //     // return "near-boundary-inside"; // inside but close to edge
-    
+
 //     const logEntry = {
 //       location: `${id} inside ${name}`,
-//       dateTime: new Date(date).toISOString(),
+//       dateTime: new Date().toLocaleString(),
 //     };
 //     console.log("Geofence", logEntry);c
 //     saveLog("Geofence", logEntry);
 
 //   } else if (!isInside && distanceToBoundary < 0  && distanceToBoundary <= tolerance) {
 //     // return "near-boundary-outside"; // outside but close to edge
-    
+
 //     const logEntry = {
 //       location: `${id} outside ${name}`,
-//       dateTime: new Date(date).toISOString(),
+//       dateTime: new Date().toLocaleString(),
 //     };
 //     console.log("Geofence", logEntry);
 //     saveLog("Geofence", logEntry);
 //   }
-  
+
 //     return isInside;
- 
+
 // }
 
-function isPointInsidePolygon(id, name, date, point, polygonLatLngs, tolerance = 100) {
+function isPointInsidePolygon(id, name, date, point, polygonLatLngs, tolerance = 50) {
   // Validate inputs
   if (!Array.isArray(point) || point.length !== 2 || !Array.isArray(polygonLatLngs) || polygonLatLngs.length < 3) {
     console.error("Invalid point or polygonLatLngs");
@@ -449,13 +449,13 @@ function isPointInsidePolygon(id, name, date, point, polygonLatLngs, tolerance =
     { units: "meters" }
   );
 
-  console.log(isInside,"distanceToBoundary(m):", distanceToBoundary, "tolerance:", tolerance,id);
+  console.log(isInside, "distanceToBoundary(m):", distanceToBoundary, "tolerance:", tolerance, id);
 
   if (isInside && distanceToBoundary <= tolerance) {
     const logEntry = {
       id: id,
       location: `${id} inside ${name}`,
-      dateTime: new Date(date).toISOString(),
+      dateTime: new Date().toLocaleString(),
     };
     console.log("Geofence", logEntry);
     saveLog("Geofence", logEntry);
@@ -464,7 +464,7 @@ function isPointInsidePolygon(id, name, date, point, polygonLatLngs, tolerance =
     const logEntry = {
       id: id,
       location: `${id} outside ${name}`,
-      dateTime: new Date(date).toISOString(),
+      dateTime: new Date().toLocaleString(),
     };
     console.log("Geofence", logEntry);
     saveLog("Geofence", logEntry);
@@ -489,7 +489,7 @@ function isPointInsideCircle(id, date, name, point, center, radius) {
     const logEntry = {
       id: id,
       location: `${id} inside ${name}`,
-      dateTime: new Date(date).toISOString(),
+      dateTime: new Date().toLocaleString(),
     };
     console.log("Geofence", logEntry);
     saveLog("Geofence", logEntry);
@@ -499,20 +499,20 @@ function isPointInsideCircle(id, date, name, point, center, radius) {
     const logEntry = {
       id: id,
       location: `${id} outside ${name}`,
-      dateTime: new Date(date).toISOString(),
+      dateTime: new Date().toLocaleString(),
     };
     console.log("Geofence", logEntry);
     saveLog("Geofence", logEntry);
   }
 
 
-  console.log(distance, radius, delta, tolerance,id, "Geofence")
+  console.log(distance, radius, delta, tolerance, id, "Geofence")
   return distance <= radius;
 }
 
 async function geofance_cheker(id, lat, lng) {
   try {
-    console.log(id,lat,lng);
+    console.log(id, lat, lng);
 
     if (lat === 0 && lng === 0) return;
 
@@ -551,7 +551,7 @@ async function geofance_cheker(id, lat, lng) {
           [lat, lng],
           geo.Data
         );
-        console.log(id,[lat, lng], geo);
+        console.log(id, [lat, lng], geo);
         console.log(`Geofence ${fence.Name} (Polygon) - Point inside:`, inside);
 
       } else {
@@ -585,7 +585,7 @@ function checkIdling(id, speed, engineSpeed, time, latest, Ambient_temp) {
       Ambient_Temperature: Ambient_temp,
       startTime: new Date(idlingFlags[id].startTime).toISOString(),
       endTime: new Date(time).toISOString(),
-      dateTime: new Date(latest.updatedAt).toISOString(),
+      dateTime: new Date().toLocaleString(),
     };
     saveLog("Idling", logEntry);
     idlingFlags[id].isIdling = false;
