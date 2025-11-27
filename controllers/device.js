@@ -1,3 +1,4 @@
+const Device_info = require('../models/device_data_models');
 const Device_model = require("../models/device_model");
 
 
@@ -64,6 +65,8 @@ exports.delete_device = async (req,res) => {
         
     const {device_id} = req.body;
     console.log(device_id)
+    await Device_info.deleteOne({device_id : device_id});
+    
     const query = await Device_model.deleteOne({device_id : device_id});
     res.status(200).json({message : "Device Deleted."});
 
