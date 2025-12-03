@@ -524,3 +524,65 @@ exports.DataHistory = async (req, res) => {
 };
 
 
+
+
+exports.MultipleDeviceHistory = async (req, res) => {
+  try {
+    const {
+      device_id = "all",
+      startdate,
+      enddate,
+      page = 1,
+      limit = 500, // Default limit if not provided
+    } = req.body;
+
+    // Validate required dates
+    if (!startdate || !enddate) {
+      return res.status(400).json({
+        success: false,
+        message: "Start date and end date are required.",
+      });
+    }
+
+    // 🧠 Build dynamic filter
+    const filter = {
+      createdAt: {
+        $gte: new Date(`${startdate}T00:00:00Z`),
+        $lte: new Date(`${enddate}T23:59:59Z`),
+      },
+    };
+
+    if (device_id !== "all") {
+      filter.device_id = device_id;
+    }
+
+    const skip = (page - 1) * limit;
+
+    // ⚙️ Fetch records with pagination and sorting
+    const [data, total] = await Promise.all([
+      All_device_info.find(filter)
+        .sort({ createdAt: -1 }) // Latest first
+        // .skip(skip)
+        // .limit(limit)
+        .lean(),
+      All_device_info.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      device_id: device_id === "all" ? "All Devices" : device_id,
+      total,
+      page,
+      limit,
+      count: data.length,
+      data,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching data:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};

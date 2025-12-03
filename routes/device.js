@@ -16,6 +16,8 @@ router.post("/all_data",devicecontroller.all_data);
 router.get("/Get_data_excle",devicecontroller.Get_data_excle);
 
 router.post("/DataHistory",devicecontroller.DataHistory);
+router.post("/MultipleDeviceHistory",devicecontroller.MultipleDeviceHistory);
+
 
 
 router.post("/add_farme",Farme.add_farme);
