@@ -555,7 +555,8 @@ exports.MultipleDeviceHistory = async (req, res) => {
     };
 
     if (device_id !== "all") {
-      filter.device_id = {$in : device_id};
+      // filter.device_id = {$in : device_id};
+      filter.device_id = { $in: device_id };
     }
 
     const skip = (page - 1) * limit;
